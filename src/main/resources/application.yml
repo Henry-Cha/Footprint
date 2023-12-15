@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: # 기본설정
+      - local
+    group:
+      local:
+        - db-local
+      server:
+        - db-server
+    include: db
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${mysql.url}
+    username: ${mysql.username}
+    password: ${mysql.password}
