@@ -39,3 +39,4 @@ out/
 
 # 설정파일 보안정보
 application-db.yml
+application-auth.yml

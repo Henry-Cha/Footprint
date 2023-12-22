@@ -7,9 +7,18 @@ spring:
         - db-local
       server:
         - db-server
-    include: db
+    include:
+      - db
+      - auth
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${mysql.url}
     username: ${mysql.username}
     password: ${mysql.password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
