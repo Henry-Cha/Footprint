@@ -22,3 +22,16 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
+
+#springdoc swagger
+springdoc:
+  # Disabling the /v3/api-docs endpoint
+  api-docs:
+    enabled: true
+    path: /swagger-ui/docs
+  # Disabling the swagger-ui
+  swagger-ui:
+    enabled: true
+    tagsSorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
