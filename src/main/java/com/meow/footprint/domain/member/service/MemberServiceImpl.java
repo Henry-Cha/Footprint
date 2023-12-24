@@ -5,6 +5,7 @@ import com.meow.footprint.domain.member.entity.Member;
 import com.meow.footprint.domain.member.repository.MemberRepository;
 import com.meow.footprint.global.result.error.ErrorCode;
 import com.meow.footprint.global.result.error.exception.EntityAlreadyExistException;
+import com.meow.footprint.global.result.error.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -38,7 +39,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberResponse findMemberById(String memberId) {
-        return null;
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException(ErrorCode.MEMBER_ID_NOT_EXIST));
+        return MemberResponse.from(member);
     }
 
     @Override
