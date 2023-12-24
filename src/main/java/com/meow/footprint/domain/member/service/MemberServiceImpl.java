@@ -33,7 +33,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public boolean idCheck(String memberId) {
-        return false;
+        return memberRepository.existsById(memberId);
     }
 
     @Override
