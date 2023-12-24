@@ -6,6 +6,7 @@ import com.meow.footprint.domain.member.repository.MemberRepository;
 import com.meow.footprint.global.result.error.exception.BusinessException;
 import com.meow.footprint.global.result.error.exception.EntityAlreadyExistException;
 import com.meow.footprint.global.result.error.exception.EntityNotFoundException;
+import com.meow.footprint.global.util.AccountUtil;
 import com.meow.footprint.global.util.JWTTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
     private final JWTTokenProvider jwtTokenProvider;
+    private final AccountUtil accountUtil;
 
     @Transactional
     @Override
@@ -50,12 +52,18 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     @Override
     public void updateMember(MemberUpdateRequest memberUpdateRequest, String memberId) {
+        if(!accountUtil.checkLoginMember(memberId)){
+            throw new BusinessException(FORBIDDEN_ERROR);
+        }
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException(MEMBER_ID_NOT_EXIST));
         member.setName(memberUpdateRequest.name());
     }
 
     @Override
     public void deleteMember(String memberId) {
+        if(!accountUtil.checkLoginMember(memberId)){
+            throw new BusinessException(FORBIDDEN_ERROR);
+        }
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException(MEMBER_ID_NOT_EXIST));
         memberRepository.delete(member);
     }
@@ -76,6 +84,9 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     @Override
     public void updatePassword(PasswordUpdateRequest passwordUpdateRequest, String memberId) {
+        if(!accountUtil.checkLoginMember(memberId)){
+            throw new BusinessException(FORBIDDEN_ERROR);
+        }
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException(MEMBER_ID_NOT_EXIST));
         if(!passwordEncoder.matches(passwordUpdateRequest.oldPassword(), member.getPassword())){
             throw new BusinessException(WRONG_PASSWORD);
