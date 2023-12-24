@@ -16,7 +16,8 @@ public enum ErrorCode {
     ENTITY_NOT_FOUNT(500, "존재하지 않는 Entity입니다."),
 
     // Member
-    MEMBERID_ALREADY_EXIST(400, "이미 존재하는 아이디입니다.");
+    MEMBER_ID_ALREADY_EXIST(400, "회원 id가 이미 존재합니다."),
+    MEMBER_ID_NOT_EXIST(400, "회원 id가 존재하지 않습니다.");
 
     private final int status;
     private final String message;
