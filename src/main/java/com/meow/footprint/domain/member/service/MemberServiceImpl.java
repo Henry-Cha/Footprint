@@ -1,9 +1,13 @@
 package com.meow.footprint.domain.member.service;
 
 import com.meow.footprint.domain.member.dto.*;
+import com.meow.footprint.domain.member.entity.Member;
 import com.meow.footprint.domain.member.repository.MemberRepository;
+import com.meow.footprint.global.result.error.ErrorCode;
+import com.meow.footprint.global.result.error.exception.EntityAlreadyExistException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +19,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
+    @Transactional
     @Override
     public void register(MemberJoinRequest joinRequest) {
+        Member member = modelMapper.map(joinRequest,Member.class);
+        if(memberRepository.existsById(member.getId())) throw new EntityAlreadyExistException(ErrorCode.MEMBER_ID_ALREADY_EXIST);
+
+        member.encodingPassword(passwordEncoder);
+        memberRepository.save(member);
     }
 
     @Override
