@@ -15,6 +15,12 @@ public enum ErrorCode {
     HTTP_HEADER_INVALID(400, "request header가 유효하지 않습니다."),
     ENTITY_NOT_FOUNT(500, "존재하지 않는 Entity입니다."),
 
+    //JWT
+    JWT_INVALID(401, "유효하지 않은 토큰입니다."),
+    JWT_BADTYPE(401, "Bearer 타입 토큰이 아닙니다."),
+    JWT_EXPIRED(403, "만료된 토큰입니다."),
+    JWT_MALFORM(401, "토큰값이 올바르지 않습니다."),
+
     // Member
     WRONG_PASSWORD(400, "비밀번호가 일치하지 않습니다."),
     MEMBER_ID_ALREADY_EXIST(400, "회원 id가 이미 존재합니다."),
