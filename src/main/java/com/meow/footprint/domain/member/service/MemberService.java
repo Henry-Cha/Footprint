@@ -10,7 +10,7 @@ public interface MemberService {
 
     MemberResponse findMemberById(String memberId);
 
-    void updateMember(MemberUpdateRequest memberUpdateRequest);
+    void updateMember(MemberUpdateRequest memberUpdateRequest, String memberId);
 
     void deleteMember(String memberId);
 
