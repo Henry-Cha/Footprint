@@ -59,6 +59,7 @@ public class MemberServiceImpl implements MemberService {
         member.setName(memberUpdateRequest.name());
     }
 
+    @Transactional
     @Override
     public void deleteMember(String memberId) {
         if(!accountUtil.checkLoginMember(memberId)){
