@@ -6,6 +6,7 @@ import com.meow.footprint.domain.member.repository.MemberRepository;
 import com.meow.footprint.global.result.error.exception.BusinessException;
 import com.meow.footprint.global.result.error.exception.EntityAlreadyExistException;
 import com.meow.footprint.global.result.error.exception.EntityNotFoundException;
+import com.meow.footprint.global.util.JWTTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -23,6 +24,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
+    private final JWTTokenProvider jwtTokenProvider;
 
     @Transactional
     @Override
@@ -60,7 +62,10 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
-        return null;
+        Member member = memberRepository.findById(loginRequest.getId())
+                .filter(m -> passwordEncoder.matches(loginRequest.getPassword(), m.getPassword()))
+                .orElseThrow(() -> new BusinessException(LOGIN_FAIL));
+        return jwtTokenProvider.getLoginResponse(member);
     }
 
     @Override

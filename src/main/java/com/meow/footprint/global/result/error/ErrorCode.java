@@ -22,6 +22,7 @@ public enum ErrorCode {
     JWT_MALFORM(401, "토큰값이 올바르지 않습니다."),
 
     // Member
+    LOGIN_FAIL(400, "로그인에 실패했습니다."),
     WRONG_PASSWORD(400, "비밀번호가 일치하지 않습니다."),
     MEMBER_ID_ALREADY_EXIST(400, "회원 id가 이미 존재합니다."),
     MEMBER_ID_NOT_EXIST(400, "회원 id가 존재하지 않습니다.");
