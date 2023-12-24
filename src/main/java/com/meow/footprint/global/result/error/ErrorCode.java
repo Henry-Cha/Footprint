@@ -16,6 +16,7 @@ public enum ErrorCode {
     ENTITY_NOT_FOUNT(500, "존재하지 않는 Entity입니다."),
 
     // Member
+    WRONG_PASSWORD(400, "비밀번호가 일치하지 않습니다."),
     MEMBER_ID_ALREADY_EXIST(400, "회원 id가 이미 존재합니다."),
     MEMBER_ID_NOT_EXIST(400, "회원 id가 존재하지 않습니다.");
 

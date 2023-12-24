@@ -75,9 +75,9 @@ public class MemberController {
 	}
 
 	@Operation(summary = "비밀번호 수정.")
-	@PatchMapping("/password")
-	public ResponseEntity<ResultResponse> updatePassword(@RequestBody PasswordUpdateRequest passwordUpdateRequest) {
-		memberService.updatePassword(passwordUpdateRequest);
+	@PatchMapping("/{memberId}/password")
+	public ResponseEntity<ResultResponse> updatePassword(@RequestBody PasswordUpdateRequest passwordUpdateRequest, @PathVariable String memberId) {
+		memberService.updatePassword(passwordUpdateRequest,memberId);
 		return ResponseEntity.ok(ResultResponse.of(PASSWORD_UPDATE_SUCCESS));
 	}
 }

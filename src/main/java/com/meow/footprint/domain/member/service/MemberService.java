@@ -18,5 +18,5 @@ public interface MemberService {
 
     void logout();
 
-    void updatePassword(PasswordUpdateRequest passwordUpdateRequest);
+    void updatePassword(PasswordUpdateRequest passwordUpdateRequest, String memberId);
 }

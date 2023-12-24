@@ -3,6 +3,7 @@ package com.meow.footprint.domain.member.service;
 import com.meow.footprint.domain.member.dto.*;
 import com.meow.footprint.domain.member.entity.Member;
 import com.meow.footprint.domain.member.repository.MemberRepository;
+import com.meow.footprint.global.result.error.exception.BusinessException;
 import com.meow.footprint.global.result.error.exception.EntityAlreadyExistException;
 import com.meow.footprint.global.result.error.exception.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -67,8 +68,14 @@ public class MemberServiceImpl implements MemberService {
 
     }
 
+    @Transactional
     @Override
-    public void updatePassword(PasswordUpdateRequest passwordUpdateRequest) {
-
+    public void updatePassword(PasswordUpdateRequest passwordUpdateRequest, String memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException(MEMBER_ID_NOT_EXIST));
+        if(!passwordEncoder.matches(passwordUpdateRequest.oldPassword(), member.getPassword())){
+            throw new BusinessException(WRONG_PASSWORD);
+        }
+        member.setPassword(passwordUpdateRequest.newPassword());
+        member.encodingPassword(passwordEncoder);
     }
 }
