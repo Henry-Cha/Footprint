@@ -53,7 +53,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void deleteMember(String memberId) {
-
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException(MEMBER_ID_NOT_EXIST));
+        memberRepository.delete(member);
     }
 
     @Override
