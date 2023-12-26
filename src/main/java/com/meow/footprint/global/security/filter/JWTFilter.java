@@ -32,12 +32,14 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
 
-        AntPathMatcher antPathMatcher = new AntPathMatcher();
-        for(String list : whiteList){
-            if(antPathMatcher.match(list,path)){
-                log.info("pass token filter .....");
-                filterChain.doFilter(request, response);
-                return;
+        if(request.getHeader(HttpHeaders.AUTHORIZATION)== null) {
+            AntPathMatcher antPathMatcher = new AntPathMatcher();
+            for (String list : whiteList) {
+                if (antPathMatcher.match(list, path)) {
+                    log.info("pass token filter .....");
+                    filterChain.doFilter(request, response);
+                    return;
+                }
             }
         }
 
