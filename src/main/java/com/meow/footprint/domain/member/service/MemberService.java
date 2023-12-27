@@ -14,9 +14,11 @@ public interface MemberService {
 
     void deleteMember(String memberId);
 
-    LoginResponse login(LoginRequest loginRequest);
+    LoginTokenDTO login(LoginRequest loginRequest);
 
     void logout(String accessToken);
+
+    LoginTokenDTO reissue(LoginTokenDTO loginTokenDTO);
 
     void updatePassword(PasswordUpdateRequest passwordUpdateRequest, String memberId);
 }

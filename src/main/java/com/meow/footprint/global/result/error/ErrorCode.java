@@ -22,7 +22,8 @@ public enum ErrorCode {
     JWT_EXPIRED(403, "만료된 토큰입니다."),
     JWT_MALFORM(401, "토큰값이 올바르지 않습니다."),
     BLACK_TOKEN(401,"접근이 차단된 토큰입니다."),
-
+    TOKEN_ALIVE(400,  "유효기간이 만료되지 않은 토큰입니다."),
+    REFRESH_INVALID(400,"리프레시 토큰이 유효하지 않습니다."),
     // Member
     LOGIN_FAIL(400, "로그인에 실패했습니다."),
     WRONG_PASSWORD(400, "비밀번호가 일치하지 않습니다."),

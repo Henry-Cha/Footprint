@@ -64,7 +64,7 @@ public class MemberController {
 	@Operation(summary = "로그인.")
 	@PostMapping("/login")
 	public ResponseEntity<ResultResponse> login(@RequestBody LoginRequest loginRequest) {
-		LoginResponse token = memberService.login(loginRequest);
+		LoginTokenDTO token = memberService.login(loginRequest);
 		return ResponseEntity.ok(ResultResponse.of(LOGIN_SUCCESS,token));
 	}
 
@@ -73,6 +73,13 @@ public class MemberController {
 	public ResponseEntity<ResultResponse> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken) {
 		memberService.logout(accessToken);
 		return ResponseEntity.ok(ResultResponse.of(LOGOUT_SUCCESS));
+	}
+
+	@Operation(summary = "토큰 재발급.")
+	@PostMapping("/reissue")
+	public ResponseEntity<ResultResponse> reissue(@RequestBody LoginTokenDTO loginTokenDTO) {
+		LoginTokenDTO token = memberService.reissue(loginTokenDTO);
+		return ResponseEntity.ok(ResultResponse.of(LOGIN_SUCCESS,token));
 	}
 
 	@Operation(summary = "비밀번호 수정.")

@@ -18,7 +18,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static com.meow.footprint.global.result.error.ErrorCode.*;
@@ -78,13 +82,13 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public LoginResponse login(LoginRequest loginRequest) {
+    public LoginTokenDTO login(LoginRequest loginRequest) {
         Member member = memberRepository.findById(loginRequest.getId())
                 .filter(m -> passwordEncoder.matches(loginRequest.getPassword(), m.getPassword()))
                 .orElseThrow(() -> new BusinessException(LOGIN_FAIL));
-        LoginResponse loginResponse = jwtTokenProvider.getLoginResponse(member);
-        redisTemplate.opsForValue().set("RTK:"+ loginResponse.getUserId(), loginResponse.getRefreshToken(), Duration.ofDays(15));
-        return loginResponse;
+        LoginTokenDTO loginTokenDTO = jwtTokenProvider.getLoginResponse(member);
+        redisTemplate.opsForValue().set("RTK:"+ loginTokenDTO.getUserId(), loginTokenDTO.getRefreshToken(), Duration.ofDays(15));
+        return loginTokenDTO;
     }
 
     @Transactional
@@ -92,13 +96,13 @@ public class MemberServiceImpl implements MemberService {
     public void logout(String accessToken) {
         accessToken = accessToken.substring(7);
         try {
-            jwtTokenProvider.validateToken(accessToken);
+            jwtTokenProvider.validateAndGetClaims(accessToken);
         }catch (RuntimeException e){
             throw new BusinessException(JWT_INVALID);
         }
 
         // AccessToken에서 정보 가져옴
-        Claims claims = jwtTokenProvider.getClaims(accessToken);
+        Claims claims = jwtTokenProvider.validateAndGetClaims(accessToken);
 
         // 해당 user의 RefreshToken redis에 있다면 삭제
         if (redisTemplate.opsForValue().get("RTK:"+claims.getSubject())!=null){
@@ -109,6 +113,43 @@ public class MemberServiceImpl implements MemberService {
         long expiration = claims.getExpiration().toInstant().getEpochSecond() - ZonedDateTime.now().toEpochSecond();
         // 해당 AccessToken logout으로 저장
         redisTemplate.opsForValue().set(accessToken,"logout",expiration, TimeUnit.SECONDS);
+    }
+
+    @Transactional
+    @Override
+    public LoginTokenDTO reissue(LoginTokenDTO loginTokenDTO) {
+        String accessToken = loginTokenDTO.getAccessToken();
+        String refreshToken = loginTokenDTO.getRefreshToken();
+        HashMap<Object, String> claims = jwtTokenProvider.parseClaimsByExpiredToken(accessToken); //만료된 atk를 검증하고 claim정보를 가져옴
+        // atk가 만료되지 않은 상황은 재발급하지 않음
+        if(claims == null){
+            throw new BusinessException(TOKEN_ALIVE);
+        }
+
+        Claims refreshClaims = jwtTokenProvider.validateAndGetClaims(refreshToken);
+        String userName = claims.get("sub");
+
+        String redisToken = (String) redisTemplate.opsForValue().get("RTK:"+userName);
+        if (!Objects.equals(redisToken, refreshToken)){  //atk의 userName으로 db에 저장된 rtk와 전달받은 rtk를 비교
+            throw new BusinessException(REFRESH_INVALID);
+        }
+
+        Date exp = refreshClaims.getExpiration();
+        Date current = Date.from(OffsetDateTime.now().toInstant());
+
+        Member member = memberRepository.findById(userName).orElseThrow(()->{throw new BusinessException(MEMBER_ID_NOT_EXIST);});
+
+        //만료 시간과 현재 시간의 간격 계산
+        //만일 3일 미만인 경우에는 Refresh Token도 다시 생성
+        long gapTime = (exp.getTime() - current.getTime());
+        if(gapTime < (1000 * 60 * 60 * 24 * 3  ) ){
+            log.info("new Refresh Token required...  ");
+            refreshToken = jwtTokenProvider.generateRefreshToken(member);
+            redisTemplate.opsForValue().set("RTK:"+userName,refreshToken, Duration.ofDays(jwtTokenProvider.getRefreshTokenValidityTime()));
+        }
+
+        accessToken = jwtTokenProvider.generateAccessToken(member);
+        return new LoginTokenDTO(member.getId(),accessToken,refreshToken);
     }
 
     @Transactional
