@@ -48,7 +48,7 @@ public class MemberController {
 	}
 
 	@Operation(summary = "회원정보 수정.")
-	@PutMapping("/{memberId}")
+	@PatchMapping("/{memberId}")
 	public ResponseEntity<ResultResponse> updateMember(@RequestBody MemberUpdateRequest memberUpdateRequest,@PathVariable String memberId) {
 		memberService.updateMember(memberUpdateRequest,memberId);
 		return ResponseEntity.ok(ResultResponse.of(MEMBER_UPDATE_SUCCESS));
