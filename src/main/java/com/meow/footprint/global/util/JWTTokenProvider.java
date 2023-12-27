@@ -59,7 +59,7 @@ public class JWTTokenProvider {
                 .setSubject(member.getId())  // JWT 토큰 제목
                 .setId("ATK")
                 .claim("auth",authority)  //권한정보 저장
-                .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(3).toInstant()))//.plusDays(tokenValidityTime).toInstant()))    // JWT 토큰 만료 시간
+                .setExpiration(Date.from(ZonedDateTime.now().plusDays(tokenValidityTime).toInstant()))    // JWT 토큰 만료 시간
                 .compact();
     }
     public String generateRefreshToken(Member member) {
