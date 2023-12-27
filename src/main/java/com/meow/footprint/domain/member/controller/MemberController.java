@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -69,8 +70,8 @@ public class MemberController {
 
 	@Operation(summary = "로그아웃.")
 	@PostMapping("/logout")
-	public ResponseEntity<ResultResponse> logout() {
-		memberService.logout();
+	public ResponseEntity<ResultResponse> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String accessToken) {
+		memberService.logout(accessToken);
 		return ResponseEntity.ok(ResultResponse.of(LOGOUT_SUCCESS));
 	}
 

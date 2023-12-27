@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -19,12 +20,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.meow.footprint.global.result.error.ErrorCode.BLACK_TOKEN;
 import static com.meow.footprint.global.result.error.ErrorCode.JWT_BADTYPE;
 
 @Log4j2
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTTokenProvider jwtTokenProvider;
+    private final RedisTemplate redisTemplate;
     @Value("${auth.whiteList}")
     private String[] whiteList;
 
@@ -49,6 +52,9 @@ public class JWTFilter extends OncePerRequestFilter {
 
             //토큰 유효성 검사
             if (jwtTokenProvider.validateToken(token)) {
+                if (redisTemplate.opsForValue().get(token)!=null){
+                    throw new BusinessException(BLACK_TOKEN);
+                }
                 // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);

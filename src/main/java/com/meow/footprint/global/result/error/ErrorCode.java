@@ -21,6 +21,7 @@ public enum ErrorCode {
     JWT_BADTYPE(401, "Bearer 타입 토큰이 아닙니다."),
     JWT_EXPIRED(403, "만료된 토큰입니다."),
     JWT_MALFORM(401, "토큰값이 올바르지 않습니다."),
+    BLACK_TOKEN(401,"접근이 차단된 토큰입니다."),
 
     // Member
     LOGIN_FAIL(400, "로그인에 실패했습니다."),

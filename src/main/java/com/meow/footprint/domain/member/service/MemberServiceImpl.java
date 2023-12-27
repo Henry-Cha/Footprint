@@ -8,12 +8,18 @@ import com.meow.footprint.global.result.error.exception.EntityAlreadyExistExcept
 import com.meow.footprint.global.result.error.exception.EntityNotFoundException;
 import com.meow.footprint.global.util.AccountUtil;
 import com.meow.footprint.global.util.JWTTokenProvider;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.util.concurrent.TimeUnit;
 
 import static com.meow.footprint.global.result.error.ErrorCode.*;
 
@@ -27,6 +33,7 @@ public class MemberServiceImpl implements MemberService {
     private final ModelMapper modelMapper;
     private final JWTTokenProvider jwtTokenProvider;
     private final AccountUtil accountUtil;
+    private final RedisTemplate redisTemplate;
 
     @Transactional
     @Override
@@ -69,17 +76,39 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.delete(member);
     }
 
+    @Transactional
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
         Member member = memberRepository.findById(loginRequest.getId())
                 .filter(m -> passwordEncoder.matches(loginRequest.getPassword(), m.getPassword()))
                 .orElseThrow(() -> new BusinessException(LOGIN_FAIL));
-        return jwtTokenProvider.getLoginResponse(member);
+        LoginResponse loginResponse = jwtTokenProvider.getLoginResponse(member);
+        redisTemplate.opsForValue().set("RTK:"+ loginResponse.getUserId(), loginResponse.getRefreshToken(), Duration.ofDays(15));
+        return loginResponse;
     }
 
+    @Transactional
     @Override
-    public void logout() {
+    public void logout(String accessToken) {
+        accessToken = accessToken.substring(7);
+        try {
+            jwtTokenProvider.validateToken(accessToken);
+        }catch (RuntimeException e){
+            throw new BusinessException(JWT_INVALID);
+        }
 
+        // AccessToken에서 정보 가져옴
+        Claims claims = jwtTokenProvider.getClaims(accessToken);
+
+        // 해당 user의 RefreshToken redis에 있다면 삭제
+        if (redisTemplate.opsForValue().get("RTK:"+claims.getSubject())!=null){
+            redisTemplate.delete("RTK:"+claims.getSubject());
+        }
+
+        //만료시간 가져옴
+        long expiration = claims.getExpiration().toInstant().getEpochSecond() - ZonedDateTime.now().toEpochSecond();
+        // 해당 AccessToken logout으로 저장
+        redisTemplate.opsForValue().set(accessToken,"logout",expiration, TimeUnit.SECONDS);
     }
 
     @Transactional

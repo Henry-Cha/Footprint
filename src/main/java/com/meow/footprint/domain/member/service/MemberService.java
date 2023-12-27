@@ -16,7 +16,7 @@ public interface MemberService {
 
     LoginResponse login(LoginRequest loginRequest);
 
-    void logout();
+    void logout(String accessToken);
 
     void updatePassword(PasswordUpdateRequest passwordUpdateRequest, String memberId);
 }

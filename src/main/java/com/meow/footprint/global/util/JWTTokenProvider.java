@@ -93,7 +93,7 @@ public class JWTTokenProvider {
         }
     }
     //토큰 정보를 기반으로 Claims 정보를 반환받는 메서드
-    private Claims getClaims(String token) {
+    public Claims getClaims(String token) {
         try {
             return Jwts.parserBuilder().setSigningKey(createKey()).build().parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {  // TODO: 2023-12-24 예외처리 수정 
