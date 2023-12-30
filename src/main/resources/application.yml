@@ -22,6 +22,11 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      location: ${image.upload.path}
 
 #springdoc swagger
 springdoc:
@@ -35,3 +40,4 @@ springdoc:
     tagsSorter: alpha
     operations-sorter: alpha
     display-request-duration: true
+

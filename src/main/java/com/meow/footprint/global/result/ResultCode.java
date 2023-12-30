@@ -15,7 +15,10 @@ public enum ResultCode {
     MEMBER_DELETE_SUCCESS(200,  "회원 탈퇴에 성공하였습니다."),
     LOGIN_SUCCESS(200,  "로그인에 성공하였습니다."),
     LOGOUT_SUCCESS(200,  "로그아웃에 성공하였습니다."),
-    PASSWORD_UPDATE_SUCCESS(200,  "비밀번호 변경에 성공하였습니다.");
+    PASSWORD_UPDATE_SUCCESS(200,  "비밀번호 변경에 성공하였습니다."),
+
+    // Guestbook
+    CREATE_GUESTBOOK_SUCCESS(201,"방명록 생성에 성공하였습니다.");
 
 
     private final int status;
