@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,8 +26,8 @@ public class GuestbookController {
 
     @Operation(summary = "방명록 생성")
     @PostMapping(value = "",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResultResponse> createGuestbook(@ModelAttribute GuestBookRequest guestBookRequest) {
-        guestbookService.createGuestbook(guestBookRequest);
+    public ResponseEntity<ResultResponse> createGuestbook(GuestBookRequest guestBookRequest, @RequestParam(required = false) MultipartFile photo) {
+        guestbookService.createGuestbook(guestBookRequest,photo);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.of(ResultCode.CREATE_GUESTBOOK_SUCCESS));
     }
     @Operation(summary = "방명록 목록 조회")

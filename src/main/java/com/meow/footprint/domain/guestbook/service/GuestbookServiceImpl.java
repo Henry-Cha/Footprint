@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,11 +31,11 @@ public class GuestbookServiceImpl implements GuestbookService{
 
     @Transactional
     @Override
-    public void createGuestbook(GuestBookRequest guestBookRequest) {
+    public void createGuestbook(GuestBookRequest guestBookRequest, MultipartFile photo) {
         Member member = accountUtil.getLoginMember();
         Guestbook guestbook = new Guestbook(guestBookRequest);
         guestbook.setHost(member);
-        String uploadPath = imageUploader.upload(guestBookRequest.getPhoto());
+        String uploadPath = imageUploader.upload(photo);
         guestbook.setPhoto(uploadPath);
         guestbookRepository.save(guestbook);
     }
