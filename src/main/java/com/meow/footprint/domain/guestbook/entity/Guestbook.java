@@ -23,7 +23,7 @@ public class Guestbook {
     private long id;
     private String name;
     private String description;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member host;
     private String photo;
     @ColumnDefault("0")

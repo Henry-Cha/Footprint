@@ -1,6 +1,7 @@
 package com.meow.footprint.domain.guestbook.controller;
 
 import com.meow.footprint.domain.guestbook.dto.GuestBookRequest;
+import com.meow.footprint.domain.guestbook.dto.GuestbookDTO;
 import com.meow.footprint.domain.guestbook.service.GuestbookService;
 import com.meow.footprint.global.result.ResultCode;
 import com.meow.footprint.global.result.ResultResponse;
@@ -10,6 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import static com.meow.footprint.global.result.ResultCode.GET_GUESTBOOK_LIST_SUCCESS;
 
 @RestController
 @RequestMapping("/guestbooks")
@@ -22,5 +27,11 @@ public class GuestbookController {
     public ResponseEntity<ResultResponse> createGuestbook(@ModelAttribute GuestBookRequest guestBookRequest) {
         guestbookService.createGuestbook(guestBookRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.of(ResultCode.CREATE_GUESTBOOK_SUCCESS));
+    }
+    @Operation(summary = "방명록 목록 조회")
+    @GetMapping("")
+    public ResponseEntity<ResultResponse> getGuestbookList(String memberId) {
+        List<GuestbookDTO> list = guestbookService.getGuestbookList(memberId);
+        return ResponseEntity.ok(ResultResponse.of(GET_GUESTBOOK_LIST_SUCCESS,list));
     }
 }

@@ -18,7 +18,8 @@ public enum ResultCode {
     PASSWORD_UPDATE_SUCCESS(200,  "비밀번호 변경에 성공하였습니다."),
 
     // Guestbook
-    CREATE_GUESTBOOK_SUCCESS(201,"방명록 생성에 성공하였습니다.");
+    CREATE_GUESTBOOK_SUCCESS(201,"방명록 생성에 성공하였습니다."),
+    GET_GUESTBOOK_LIST_SUCCESS(201,"방명록 목록 조회에 성공하였습니다.");
 
 
     private final int status;
