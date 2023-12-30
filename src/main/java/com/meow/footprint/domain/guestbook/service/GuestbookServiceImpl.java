@@ -5,6 +5,8 @@ import com.meow.footprint.domain.guestbook.dto.GuestbookDTO;
 import com.meow.footprint.domain.guestbook.entity.Guestbook;
 import com.meow.footprint.domain.guestbook.repository.GuestbookRepository;
 import com.meow.footprint.domain.member.entity.Member;
+import com.meow.footprint.global.result.error.ErrorCode;
+import com.meow.footprint.global.result.error.exception.BusinessException;
 import com.meow.footprint.global.util.AccountUtil;
 import com.meow.footprint.global.util.ImageUploader;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +50,13 @@ public class GuestbookServiceImpl implements GuestbookService{
                     return dto;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public void deleteGuestbook(long guestbookId) {
+        Guestbook guestbook = guestbookRepository.findById(guestbookId).orElseThrow(()->{throw new BusinessException(ErrorCode.GUESTBOOK_ID_NOT_EXIST);});
+        accountUtil.checkLoginMember(guestbook.getHost().getId()); // TODO: 2023-12-30 삭제할때 이미지파일도 삭제??
+        guestbookRepository.delete(guestbook);
     }
 }

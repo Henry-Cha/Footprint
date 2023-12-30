@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.meow.footprint.global.result.ResultCode.DELETE_GUESTBOOK_SUCCESS;
 import static com.meow.footprint.global.result.ResultCode.GET_GUESTBOOK_LIST_SUCCESS;
 
 @RestController
@@ -33,5 +34,11 @@ public class GuestbookController {
     public ResponseEntity<ResultResponse> getGuestbookList(String memberId) {
         List<GuestbookDTO> list = guestbookService.getGuestbookList(memberId);
         return ResponseEntity.ok(ResultResponse.of(GET_GUESTBOOK_LIST_SUCCESS,list));
+    }
+    @Operation(summary = "방명록 삭제")
+    @DeleteMapping("{guestbookId}")
+    public ResponseEntity<ResultResponse> deleteGuestbook(@PathVariable long guestbookId) {
+        guestbookService.deleteGuestbook(guestbookId);
+        return ResponseEntity.ok(ResultResponse.of(DELETE_GUESTBOOK_SUCCESS));
     }
 }

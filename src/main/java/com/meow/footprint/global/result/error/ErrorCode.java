@@ -31,7 +31,11 @@ public enum ErrorCode {
     MEMBER_ID_NOT_EXIST(400, "회원 id가 존재하지 않습니다."),
 
     //upload
-    IS_NOT_IMAGE(400,"이미지파일만 업로드 가능합니다.");
+    IS_NOT_IMAGE(400,"이미지파일만 업로드 가능합니다."),
+
+    //guestbook
+    GUESTBOOK_ID_NOT_EXIST(400,"존재하지 않는 방명록id입니다.");
+
 
     private final int status;
     private final String message;

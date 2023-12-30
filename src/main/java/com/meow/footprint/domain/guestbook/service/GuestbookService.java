@@ -9,4 +9,6 @@ public interface GuestbookService {
     void createGuestbook(GuestBookRequest guestBookRequest);
 
     List<GuestbookDTO> getGuestbookList(String memberId);
+
+    void deleteGuestbook(long guestbookId);
 }
