@@ -21,7 +21,8 @@ public enum ResultCode {
     CREATE_GUESTBOOK_SUCCESS(201,"방명록 생성에 성공하였습니다."),
     GET_GUESTBOOK_LIST_SUCCESS(200,"방명록 목록 조회에 성공하였습니다."),
     DELETE_GUESTBOOK_SUCCESS(200,"방명록 삭제에 성공하였습니다."),
-    UPDATE_GUESTBOOK_SUCCESS(200,"방명록 수정에 성공하였습니다.");
+    UPDATE_GUESTBOOK_SUCCESS(200,"방명록 수정에 성공하였습니다."),
+    GET_GUESTBOOK_SIMPLE_SUCCESS(200,"방명록 개별 조회에 성공하였습니다.");
 
 
     private final int status;

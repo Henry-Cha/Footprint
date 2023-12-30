@@ -2,6 +2,7 @@ package com.meow.footprint.domain.guestbook.service;
 
 import com.meow.footprint.domain.guestbook.dto.GuestBookRequest;
 import com.meow.footprint.domain.guestbook.dto.GuestbookDTO;
+import com.meow.footprint.domain.guestbook.dto.GuestbookSimpleResponse;
 import com.meow.footprint.domain.guestbook.entity.Guestbook;
 import com.meow.footprint.domain.guestbook.repository.GuestbookRepository;
 import com.meow.footprint.domain.member.entity.Member;
@@ -69,5 +70,11 @@ public class GuestbookServiceImpl implements GuestbookService{
         guestbook.update(guestBookRequest);
         String uploadPath = imageUploader.upload(photo);
         guestbook.setPhoto(uploadPath);
+    }
+
+    @Override
+    public GuestbookSimpleResponse getGuestbookSimple(long guestbookId) {
+        Guestbook guestbook = guestbookRepository.findById(guestbookId).orElseThrow(()->{throw new BusinessException(ErrorCode.GUESTBOOK_ID_NOT_EXIST);});
+        return GuestbookSimpleResponse.from(guestbook);
     }
 }
