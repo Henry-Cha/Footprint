@@ -52,7 +52,7 @@ public class GuestbookController {
         return ResponseEntity.ok(ResultResponse.of(UPDATE_GUESTBOOK_SUCCESS));
     }
     @Operation(summary = "방명록 개별 조회")
-    @GetMapping("{guestbookId}")
+    @GetMapping("{guestbookId}/simple")
     public ResponseEntity<ResultResponse> getGuestbookSimple(@PathVariable long guestbookId){
         GuestbookSimpleResponse simpleResponse = guestbookService.getGuestbookSimple(guestbookId);
         return ResponseEntity.ok(ResultResponse.of(GET_GUESTBOOK_SIMPLE_SUCCESS,simpleResponse));
