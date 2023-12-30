@@ -24,10 +24,11 @@ import static com.meow.footprint.global.result.ResultCode.*;
 public class GuestbookController {
     private final GuestbookService guestbookService;
 
-    // TODO: 2023-12-30 photo를 required=false(null가능)하게 하려니까 GuestBookRequest이 파라미터로 빠졌는데 이래도 괜찮은가? modelAttribute달아도 안됨
+    // TODO: 2023-12-30 스웨거에서 테스트 하면 dto가 json으로 안날라가서 테스트 안됨. 포스트맨에서는 됨
     @Operation(summary = "방명록 생성")
     @PostMapping(value = "",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResultResponse> createGuestbook(GuestBookRequest guestBookRequest, @RequestParam(required = false) MultipartFile photo) {
+    public ResponseEntity<ResultResponse> createGuestbook(@RequestPart GuestBookRequest guestBookRequest
+            , @RequestPart(value = "photo", required = false) MultipartFile photo){
         guestbookService.createGuestbook(guestBookRequest,photo);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.of(ResultCode.CREATE_GUESTBOOK_SUCCESS));
     }
@@ -45,7 +46,8 @@ public class GuestbookController {
     }
     @Operation(summary = "방명록 수정")
     @PatchMapping(value = "{guestbookId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResultResponse> updateGuestbook(@PathVariable long guestbookId, GuestBookRequest guestBookRequest, @RequestParam(required = false) MultipartFile photo){
+    public ResponseEntity<ResultResponse> updateGuestbook(@PathVariable long guestbookId,@RequestPart GuestBookRequest guestBookRequest
+            , @RequestParam(required = false) MultipartFile photo){
         guestbookService.updateGuestbook(guestbookId,guestBookRequest,photo);
         return ResponseEntity.ok(ResultResponse.of(UPDATE_GUESTBOOK_SUCCESS));
     }
