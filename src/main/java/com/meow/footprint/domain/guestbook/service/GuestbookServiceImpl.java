@@ -60,4 +60,14 @@ public class GuestbookServiceImpl implements GuestbookService{
         accountUtil.checkLoginMember(guestbook.getHost().getId()); // TODO: 2023-12-30 삭제할때 이미지파일도 삭제??
         guestbookRepository.delete(guestbook);
     }
+
+    @Transactional
+    @Override
+    public void updateGuestbook(long guestbookId, GuestBookRequest guestBookRequest, MultipartFile photo) {
+        Guestbook guestbook = guestbookRepository.findById(guestbookId).orElseThrow(()->{throw new BusinessException(ErrorCode.GUESTBOOK_ID_NOT_EXIST);});
+        accountUtil.checkLoginMember(guestbook.getHost().getId());
+        guestbook.update(guestBookRequest);
+        String uploadPath = imageUploader.upload(photo);
+        guestbook.setPhoto(uploadPath);
+    }
 }

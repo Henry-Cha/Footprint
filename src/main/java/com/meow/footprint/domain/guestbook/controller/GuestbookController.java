@@ -15,8 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static com.meow.footprint.global.result.ResultCode.DELETE_GUESTBOOK_SUCCESS;
-import static com.meow.footprint.global.result.ResultCode.GET_GUESTBOOK_LIST_SUCCESS;
+import static com.meow.footprint.global.result.ResultCode.*;
 
 @RestController
 @RequestMapping("/guestbooks")
@@ -24,6 +23,7 @@ import static com.meow.footprint.global.result.ResultCode.GET_GUESTBOOK_LIST_SUC
 public class GuestbookController {
     private final GuestbookService guestbookService;
 
+    // TODO: 2023-12-30 photo를 required=false(null가능)하게 하려니까 GuestBookRequest이 파라미터로 빠졌는데 이래도 괜찮은가? modelAttribute달아도 안됨  
     @Operation(summary = "방명록 생성")
     @PostMapping(value = "",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResultResponse> createGuestbook(GuestBookRequest guestBookRequest, @RequestParam(required = false) MultipartFile photo) {
@@ -41,5 +41,12 @@ public class GuestbookController {
     public ResponseEntity<ResultResponse> deleteGuestbook(@PathVariable long guestbookId) {
         guestbookService.deleteGuestbook(guestbookId);
         return ResponseEntity.ok(ResultResponse.of(DELETE_GUESTBOOK_SUCCESS));
+    }
+
+    @Operation(summary = "방명록 수정")
+    @PatchMapping(value = "{guestbookId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResultResponse> updateGuestbook(@PathVariable long guestbookId, GuestBookRequest guestBookRequest, @RequestParam(required = false) MultipartFile photo){
+        guestbookService.updateGuestbook(guestbookId,guestBookRequest,photo);
+        return ResponseEntity.ok(ResultResponse.of(UPDATE_GUESTBOOK_SUCCESS));
     }
 }

@@ -12,4 +12,6 @@ public interface GuestbookService {
     List<GuestbookDTO> getGuestbookList(String memberId);
 
     void deleteGuestbook(long guestbookId);
+
+    void updateGuestbook(long guestbookId, GuestBookRequest guestBookRequest, MultipartFile photo);
 }

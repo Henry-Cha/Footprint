@@ -43,4 +43,11 @@ public class Guestbook {
         this.longitude = guestBookRequest.getLongitude();
         this.address = guestBookRequest.getAddress();
     }
+    public void update(GuestBookRequest guestBookRequest){
+        this.name = guestBookRequest.getName()==null?this.name:guestBookRequest.getName();
+        this.description = guestBookRequest.getDescription()==null?this.description:guestBookRequest.getDescription();
+        this.latitude = guestBookRequest.getLatitude()==null?this.latitude:guestBookRequest.getLatitude();
+        this.longitude = guestBookRequest.getLongitude()==null?this.latitude:guestBookRequest.getLongitude();
+        this.address = guestBookRequest.getAddress()==null?this.address:guestBookRequest.getAddress();
+    }
 }
