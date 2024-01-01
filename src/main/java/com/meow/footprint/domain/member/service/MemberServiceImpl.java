@@ -137,7 +137,7 @@ public class MemberServiceImpl implements MemberService {
         Date exp = refreshClaims.getExpiration();
         Date current = Date.from(OffsetDateTime.now().toInstant());
 
-        Member member = memberRepository.findById(userName).orElseThrow(()->{throw new BusinessException(MEMBER_ID_NOT_EXIST);});
+        Member member = memberRepository.findById(userName).orElseThrow(()-> new BusinessException(MEMBER_ID_NOT_EXIST));
 
         //만료 시간과 현재 시간의 간격 계산
         //만일 3일 미만인 경우에는 Refresh Token도 다시 생성
