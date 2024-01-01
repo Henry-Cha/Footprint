@@ -22,7 +22,10 @@ public enum ResultCode {
     GET_GUESTBOOK_LIST_SUCCESS(200,"방명록 목록 조회에 성공하였습니다."),
     DELETE_GUESTBOOK_SUCCESS(200,"방명록 삭제에 성공하였습니다."),
     UPDATE_GUESTBOOK_SUCCESS(200,"방명록 수정에 성공하였습니다."),
-    GET_GUESTBOOK_SIMPLE_SUCCESS(200,"방명록 개별 조회에 성공하였습니다.");
+    GET_GUESTBOOK_SIMPLE_SUCCESS(200,"방명록 개별 조회에 성공하였습니다."),
+
+    // footprint
+    CREATE_FOOTPRINT_SUCCESS(201,"발자국 생성에 성공하였습니다.");
 
 
     private final int status;
