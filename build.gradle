@@ -42,9 +42,29 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 // https://mvnrepository.com/artifact/io.awspring.cloud/spring-cloud-starter-aws
     implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.4'
+//querydsl
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+//Q객체 저장위치
+def generatedDir = "$buildDir/generated/querydsl"
+
+sourceSets {
+    main.java.srcDirs += [ generatedDir ]
+}
+
+tasks.withType(JavaCompile) {
+    options.annotationProcessorGeneratedSourcesDirectory = file(generatedDir)
+}
+
+clean {
+    delete file(generatedDir)
 }
