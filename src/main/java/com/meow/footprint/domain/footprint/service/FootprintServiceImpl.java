@@ -45,6 +45,7 @@ public class FootprintServiceImpl implements FootprintService{
         footprintRepository.save(footprint);
     }
 
+    @Transactional
     @Override
     public FootprintResponse getSecretFootprint(long footprintId, FootprintPassword footprintPassword) {
         Footprint footprint = footprintRepository.findById(footprintId).orElseThrow(()-> new BusinessException(FOOTPRINT_ID_NOT_EXIST));
