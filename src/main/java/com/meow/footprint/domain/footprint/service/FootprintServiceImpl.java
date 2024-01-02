@@ -1,6 +1,8 @@
 package com.meow.footprint.domain.footprint.service;
 
+import com.meow.footprint.domain.footprint.dto.FootprintPassword;
 import com.meow.footprint.domain.footprint.dto.FootprintRequest;
+import com.meow.footprint.domain.footprint.dto.FootprintResponse;
 import com.meow.footprint.domain.footprint.entity.Footprint;
 import com.meow.footprint.domain.footprint.repository.FootprintRepository;
 import com.meow.footprint.domain.guestbook.entity.Guestbook;
@@ -13,8 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.meow.footprint.global.result.error.ErrorCode.GUESTBOOK_ID_NOT_EXIST;
-import static com.meow.footprint.global.result.error.ErrorCode.OUT_OF_AREA;
+import static com.meow.footprint.global.result.error.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +43,15 @@ public class FootprintServiceImpl implements FootprintService{
         guestbook.setUpdate(true);
         footprint.setGuestbook(guestbook);
         footprintRepository.save(footprint);
+    }
+
+    @Override
+    public FootprintResponse getSecretFootprint(long footprintId, FootprintPassword footprintPassword) {
+        Footprint footprint = footprintRepository.findById(footprintId).orElseThrow(()-> new BusinessException(FOOTPRINT_ID_NOT_EXIST));
+        if(!passwordEncoder.matches(footprintPassword.password(), footprint.getPassword()))
+            throw new BusinessException(FORBIDDEN_ERROR);
+        footprint.setChecked(true);
+        return FootprintResponse.from(footprint);
     }
 
     //좌표(위도,경도)를 이용한 거리계산

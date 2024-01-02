@@ -25,7 +25,8 @@ public enum ResultCode {
     GET_GUESTBOOK_SIMPLE_SUCCESS(200,"방명록 개별 조회에 성공하였습니다."),
 
     // footprint
-    CREATE_FOOTPRINT_SUCCESS(201,"발자국 생성에 성공하였습니다.");
+    CREATE_FOOTPRINT_SUCCESS(201,"발자국 생성에 성공하였습니다."),
+    GET_SECRET_FOOTPRINT_SUCCESS(200,"발자국 비밀글 조회에 성공하였습니다.");
 
 
     private final int status;
