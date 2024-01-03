@@ -44,8 +44,7 @@ public class FootprintServiceImpl implements FootprintService{
         if(!checkLocation(guestbook,footprintRequest)){
             throw new BusinessException(OUT_OF_AREA);
         }
-        if(footprintRequest.isSecret())
-            footprint.encodingPassword(passwordEncoder);
+        footprint.encodingPassword(passwordEncoder);
         guestbook.setUpdate(true);
         footprint.setGuestbook(guestbook);
         footprintRepository.save(footprint);
