@@ -13,4 +13,6 @@ public interface FootprintService {
     FootprintByDateSliceDTO getFootprintListByDate(String guestbookId, int page, int size);
 
     void deleteFootprint(long footprintId, FootprintPassword footprintPassword);
+
+    void readCheckFootprint(long footprintId);
 }

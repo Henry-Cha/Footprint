@@ -46,4 +46,11 @@ public class FootprintController {
         footprintService.deleteFootprint(footprintId,footprintPassword);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.DELETE_FOOTPRINT_SUCCESS));
     }
+
+    @Operation(summary = "발자국 읽음확인")
+    @PatchMapping("/{footprintId}")
+    public ResponseEntity<ResultResponse> readCheckFootprint(@PathVariable long footprintId){
+        footprintService.readCheckFootprint(footprintId);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.READ_FOOTPRINT_SUCCESS));
+    }
 }

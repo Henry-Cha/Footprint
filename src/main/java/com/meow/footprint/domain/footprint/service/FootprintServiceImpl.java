@@ -95,6 +95,21 @@ public class FootprintServiceImpl implements FootprintService{
         footprintRepository.delete(footprint);
     }
 
+    @Transactional
+    @Override
+    public void readCheckFootprint(long footprintId) {
+        Footprint footprint = footprintRepository.findById(footprintId).orElseThrow(()->new BusinessException(FOOTPRINT_ID_NOT_EXIST));
+        try {
+            String loginMemberId = accountUtil.getLoginMemberId();
+            if(footprint.getGuestbook().getHost().getId().equals(loginMemberId)){
+                footprint.setChecked(true);
+                footprintRepository.save(footprint);
+            }
+        }catch (RuntimeException e){
+            log.info("토큰없음");
+        }
+    }
+
     //좌표(위도,경도)를 이용한 거리계산
     public boolean checkLocation(Guestbook guestbook,FootprintRequest footprintRequest){
         double latBook = guestbook.getLatitude();
