@@ -1,5 +1,6 @@
 package com.meow.footprint.domain.footprint.controller;
 
+import com.meow.footprint.domain.footprint.dto.FootprintByDateSliceDTO;
 import com.meow.footprint.domain.footprint.dto.FootprintPassword;
 import com.meow.footprint.domain.footprint.dto.FootprintRequest;
 import com.meow.footprint.domain.footprint.dto.FootprintResponse;
@@ -30,5 +31,12 @@ public class FootprintController {
     public ResponseEntity<ResultResponse> getSecretFootprint(@PathVariable long footprintId, @RequestBody FootprintPassword footprintPassword){
         FootprintResponse footprintResponse = footprintService.getSecretFootprint(footprintId,footprintPassword);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_SECRET_FOOTPRINT_SUCCESS,footprintResponse));
+    }
+
+    @Operation(summary = "발자국 목록 조회 (날짜 별 묶음)")
+    @GetMapping("")
+    public ResponseEntity<ResultResponse> getFootprintListByDate(String guestbookId,int page,int size){
+        FootprintByDateSliceDTO sliceDTO = footprintService.getFootprintListByDate(guestbookId,page,size);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_FOOTPRINT_LIST_SUCCESS,sliceDTO));
     }
 }

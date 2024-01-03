@@ -1,8 +1,6 @@
 package com.meow.footprint.domain.footprint.service;
 
-import com.meow.footprint.domain.footprint.dto.FootprintPassword;
-import com.meow.footprint.domain.footprint.dto.FootprintRequest;
-import com.meow.footprint.domain.footprint.dto.FootprintResponse;
+import com.meow.footprint.domain.footprint.dto.*;
 import com.meow.footprint.domain.footprint.entity.Footprint;
 import com.meow.footprint.domain.footprint.repository.FootprintRepository;
 import com.meow.footprint.domain.guestbook.entity.Guestbook;
@@ -11,9 +9,15 @@ import com.meow.footprint.global.result.error.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.meow.footprint.global.result.error.ErrorCode.*;
 
@@ -53,6 +57,24 @@ public class FootprintServiceImpl implements FootprintService{
             throw new BusinessException(FORBIDDEN_ERROR);
         footprint.setChecked(true);
         return FootprintResponse.from(footprint);
+    }
+
+    @Override
+    public FootprintByDateSliceDTO getFootprintListByDate(String guestbookId, int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        Slice<FootprintResponse> responseSlice = footprintRepository.getFootprintListByDate(guestbookId,pageable);
+
+        List<FootprintByDateDTO> footprintByDateDTOList = responseSlice.stream()
+                .collect(Collectors.groupingBy(FootprintResponse::getCreateDate))
+                .entrySet().stream()
+                .map(entry -> new FootprintByDateDTO(entry.getKey(),entry.getValue()))
+                .collect(Collectors.toList());
+
+        return new FootprintByDateSliceDTO(footprintByDateDTOList
+                ,responseSlice.getNumber()
+                ,responseSlice.getSize()
+                ,responseSlice.isFirst()
+                ,responseSlice.isLast());
     }
 
     //좌표(위도,경도)를 이용한 거리계산
