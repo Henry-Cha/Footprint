@@ -53,9 +53,7 @@ public class FootprintServiceImpl implements FootprintService{
     @Transactional
     @Override
     public FootprintResponse getSecretFootprint(long footprintId, FootprintPassword footprintPassword) {
-        Footprint footprint = footprintRepository.findById(footprintId).orElseThrow(()-> new BusinessException(FOOTPRINT_ID_NOT_EXIST));
-        if(!passwordEncoder.matches(footprintPassword.password(), footprint.getPassword()))
-            throw new BusinessException(FORBIDDEN_ERROR);
+        Footprint footprint = checkFootprintAuthority(footprintId, footprintPassword);
         footprint.setChecked(true);
         return FootprintResponse.from(footprint);
     }
@@ -81,17 +79,7 @@ public class FootprintServiceImpl implements FootprintService{
     @Transactional
     @Override
     public void deleteFootprint(long footprintId, FootprintPassword footprintPassword) {
-        Footprint footprint = footprintRepository.findById(footprintId).orElseThrow(()-> new BusinessException(FOOTPRINT_ID_NOT_EXIST));
-        String loginId = null;
-        try {
-            loginId = accountUtil.getLoginMemberId();
-        }catch (RuntimeException e){
-            log.info("토큰없음");
-        }
-        if(!passwordEncoder.matches(footprintPassword.password(),footprint.getPassword())
-                && !footprint.getGuestbook().getHost().getId().equals(loginId)){
-            throw new BusinessException(FORBIDDEN_ERROR);
-        }
+        Footprint footprint = checkFootprintAuthority(footprintId, footprintPassword);
         footprintRepository.delete(footprint);
     }
 
@@ -108,6 +96,21 @@ public class FootprintServiceImpl implements FootprintService{
         }catch (RuntimeException e){
             log.info("토큰없음");
         }
+    }
+
+    private Footprint checkFootprintAuthority(long footprintId, FootprintPassword footprintPassword) {
+        Footprint footprint = footprintRepository.findById(footprintId).orElseThrow(()-> new BusinessException(FOOTPRINT_ID_NOT_EXIST));
+        String loginId = null;
+        try {
+            loginId = accountUtil.getLoginMemberId();
+        }catch (RuntimeException e){
+            log.info("토큰없음");
+        }
+        if(!passwordEncoder.matches(footprintPassword.password(), footprint.getPassword())
+                && !footprint.getGuestbook().getHost().getId().equals(loginId)) {
+            throw new BusinessException(FORBIDDEN_ERROR);
+        }
+        return footprint;
     }
 
     //좌표(위도,경도)를 이용한 거리계산
