@@ -6,6 +6,7 @@ import com.meow.footprint.domain.footprint.repository.FootprintRepository;
 import com.meow.footprint.domain.guestbook.entity.Guestbook;
 import com.meow.footprint.domain.guestbook.repository.GuestbookRepository;
 import com.meow.footprint.global.result.error.exception.BusinessException;
+import com.meow.footprint.global.util.AccountUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -30,6 +31,7 @@ public class FootprintServiceImpl implements FootprintService{
     private final GuestbookRepository guestbookRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+    private final AccountUtil accountUtil;
     private static final int DEGREE = 100; //발자국 작성 가능 범위
 
     @Transactional
@@ -75,6 +77,23 @@ public class FootprintServiceImpl implements FootprintService{
                 ,responseSlice.getSize()
                 ,responseSlice.isFirst()
                 ,responseSlice.isLast());
+    }
+
+    @Transactional
+    @Override
+    public void deleteFootprint(long footprintId, FootprintPassword footprintPassword) {
+        Footprint footprint = footprintRepository.findById(footprintId).orElseThrow(()-> new BusinessException(FOOTPRINT_ID_NOT_EXIST));
+        String loginId = null;
+        try {
+            loginId = accountUtil.getLoginMemberId();
+        }catch (RuntimeException e){
+            log.info("토큰없음");
+        }
+        if(!passwordEncoder.matches(footprintPassword.password(),footprint.getPassword())
+                && !footprint.getGuestbook().getHost().getId().equals(loginId)){
+            throw new BusinessException(FORBIDDEN_ERROR);
+        }
+        footprintRepository.delete(footprint);
     }
 
     //좌표(위도,경도)를 이용한 거리계산

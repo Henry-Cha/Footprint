@@ -39,4 +39,11 @@ public class FootprintController {
         FootprintByDateSliceDTO sliceDTO = footprintService.getFootprintListByDate(guestbookId,page,size);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_FOOTPRINT_LIST_SUCCESS,sliceDTO));
     }
+
+    @Operation(summary = "발자국 삭제")
+    @DeleteMapping("/{footprintId}")
+    public ResponseEntity<ResultResponse> deleteFootprint(@PathVariable long footprintId,FootprintPassword footprintPassword){
+        footprintService.deleteFootprint(footprintId,footprintPassword);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.DELETE_FOOTPRINT_SUCCESS));
+    }
 }
