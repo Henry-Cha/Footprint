@@ -71,4 +71,11 @@ public class FootprintController {
         footprintService.deletePhoto(photoId,footprintPassword);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.DELETE_PHOTO_SUCCESS));
     }
+
+    @Operation(summary = "발자국 사진 목록 조회 (날짜 별 묶음)")
+    @GetMapping("/photos")
+    public ResponseEntity<ResultResponse> getPhotoListByDate(String guestbookId,int page,int size){
+        FootprintByDateSliceDTO sliceDTO = footprintService.getPhotoListByDate(guestbookId,page,size);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_PHOTO_LIST_SUCCESS,sliceDTO));
+    }
 }

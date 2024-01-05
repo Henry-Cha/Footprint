@@ -9,7 +9,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FootprintByDateDTO {
+public class FootprintByDateDTO<T> {
     LocalDate date;
-    List<FootprintResponse> footprintResponses;
+    List<T> footprintResponses;
 }

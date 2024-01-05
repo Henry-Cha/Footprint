@@ -21,4 +21,6 @@ public interface FootprintService {
     void createPhoto(PhotoRequest photoRequest, MultipartFile photo);
 
     void deletePhoto(long photoId, FootprintPassword footprintPassword);
+
+    FootprintByDateSliceDTO getPhotoListByDate(String guestbookId, int page, int size);
 }

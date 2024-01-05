@@ -33,7 +33,8 @@ public enum ResultCode {
 
     //photo
     CREATE_PHOTO_SUCCESS(200,"사진(발자국) 등록에 성공하였습니다."),
-    DELETE_PHOTO_SUCCESS(200,"사진(발자국) 삭제에 성공하였습니다.");
+    DELETE_PHOTO_SUCCESS(200,"사진(발자국) 삭제에 성공하였습니다."),
+    GET_PHOTO_LIST_SUCCESS(200,"사진(발자국) 목록 조회에 성공하였습니다.");
 
 
     private final int status;

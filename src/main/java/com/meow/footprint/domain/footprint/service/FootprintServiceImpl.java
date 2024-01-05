@@ -147,6 +147,24 @@ public class FootprintServiceImpl implements FootprintService{
         photoRepository.delete(photo);
     }
 
+    @Override
+    public FootprintByDateSliceDTO getPhotoListByDate(String guestbookId, int page, int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        Slice<PhotoResponse> responseSlice = photoRepository.getPhotoListByDate(guestbookId,pageable);
+
+        List<FootprintByDateDTO> footprintByDateDTOList = responseSlice.stream()
+                .collect(Collectors.groupingBy(PhotoResponse::getCreateDate))
+                .entrySet().stream()
+                .map(entry -> new FootprintByDateDTO(entry.getKey(),entry.getValue()))
+                .collect(Collectors.toList());
+
+        return new FootprintByDateSliceDTO(footprintByDateDTOList
+                ,responseSlice.getNumber()
+                ,responseSlice.getSize()
+                ,responseSlice.isFirst()
+                ,responseSlice.isLast());
+    }
+
     private Footprint checkFootprintAuthority(long footprintId, FootprintPassword footprintPassword) {
         Footprint footprint = footprintRepository.findById(footprintId).orElseThrow(()-> new BusinessException(FOOTPRINT_ID_NOT_EXIST));
         String loginId = null;
