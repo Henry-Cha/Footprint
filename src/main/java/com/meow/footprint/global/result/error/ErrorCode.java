@@ -38,7 +38,8 @@ public enum ErrorCode {
 
     //footprint
     OUT_OF_AREA(400,"발자국 작성은 일정 범위 내에서만 가능합니다."),
-    FOOTPRINT_ID_NOT_EXIST(400,"발자국 id가 존재하지 않습니다.");
+    FOOTPRINT_ID_NOT_EXIST(400,"발자국 id가 존재하지 않습니다."),
+    PHOTO_ID_NOT_EXIST(400,"발자국 사진 id가 존재하지 않습니다.");
 
     private final int status;
     private final String message;

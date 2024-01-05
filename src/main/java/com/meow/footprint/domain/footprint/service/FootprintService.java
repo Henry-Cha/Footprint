@@ -19,4 +19,6 @@ public interface FootprintService {
     void readCheckFootprint(long footprintId);
 
     void createPhoto(PhotoRequest photoRequest, MultipartFile photo);
+
+    void deletePhoto(long photoId, FootprintPassword footprintPassword);
 }

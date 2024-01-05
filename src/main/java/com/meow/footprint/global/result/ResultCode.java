@@ -32,7 +32,8 @@ public enum ResultCode {
     READ_FOOTPRINT_SUCCESS(200,"발자국 읽음처리에 성공하였습니다."),
 
     //photo
-    CREATE_PHOTO_SUCCESS(200,"사진(발자국) 등록에 성공하였습니다.");
+    CREATE_PHOTO_SUCCESS(200,"사진(발자국) 등록에 성공하였습니다."),
+    DELETE_PHOTO_SUCCESS(200,"사진(발자국) 삭제에 성공하였습니다.");
 
 
     private final int status;

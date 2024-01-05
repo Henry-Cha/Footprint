@@ -129,6 +129,24 @@ public class FootprintServiceImpl implements FootprintService{
         photoRepository.save(photoEntity);
     }
 
+    @Transactional
+    @Override
+    public void deletePhoto(long photoId, FootprintPassword footprintPassword) {
+        Photo photo = photoRepository.findById(photoId).orElseThrow(()-> new BusinessException(PHOTO_ID_NOT_EXIST));
+        String loginId = null;
+        try {
+            loginId = accountUtil.getLoginMemberId();
+        }catch (RuntimeException e){
+            log.info("토큰없음");
+        }
+        if(!passwordEncoder.matches(footprintPassword.password(), photo.getPassword())
+                && !photo.getGuestbook().getHost().getId().equals(loginId)) {
+            throw new BusinessException(FORBIDDEN_ERROR);
+        }
+        // TODO: 2024-01-05 코드 리팩토링 필요
+        photoRepository.delete(photo);
+    }
+
     private Footprint checkFootprintAuthority(long footprintId, FootprintPassword footprintPassword) {
         Footprint footprint = footprintRepository.findById(footprintId).orElseThrow(()-> new BusinessException(FOOTPRINT_ID_NOT_EXIST));
         String loginId = null;

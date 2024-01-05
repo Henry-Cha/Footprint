@@ -64,4 +64,11 @@ public class FootprintController {
         footprintService.createPhoto(photoRequest,photo);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.of(ResultCode.CREATE_PHOTO_SUCCESS));
     }
+
+    @Operation(summary = "발자국 사진 삭제")
+    @PostMapping(value = "/photos/{photoId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResultResponse> deletePhoto(@PathVariable long photoId,FootprintPassword footprintPassword){
+        footprintService.deletePhoto(photoId,footprintPassword);
+        return ResponseEntity.ok(ResultResponse.of(ResultCode.DELETE_PHOTO_SUCCESS));
+    }
 }
