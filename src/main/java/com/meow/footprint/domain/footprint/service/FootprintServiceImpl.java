@@ -2,11 +2,15 @@ package com.meow.footprint.domain.footprint.service;
 
 import com.meow.footprint.domain.footprint.dto.*;
 import com.meow.footprint.domain.footprint.entity.Footprint;
+import com.meow.footprint.domain.footprint.entity.Photo;
 import com.meow.footprint.domain.footprint.repository.FootprintRepository;
+import com.meow.footprint.domain.footprint.repository.PhotoRepository;
 import com.meow.footprint.domain.guestbook.entity.Guestbook;
 import com.meow.footprint.domain.guestbook.repository.GuestbookRepository;
+import com.meow.footprint.domain.footprint.dto.PhotoRequest;
 import com.meow.footprint.global.result.error.exception.BusinessException;
 import com.meow.footprint.global.util.AccountUtil;
+import com.meow.footprint.global.util.ImageUploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -16,6 +20,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,9 +34,11 @@ import static com.meow.footprint.global.result.error.ErrorCode.*;
 public class FootprintServiceImpl implements FootprintService{
     private final FootprintRepository footprintRepository;
     private final GuestbookRepository guestbookRepository;
+    private final PhotoRepository photoRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final AccountUtil accountUtil;
+    private final ImageUploader imageUploader;
     private static final int DEGREE = 100; //발자국 작성 가능 범위
 
     @Transactional
@@ -41,7 +48,10 @@ public class FootprintServiceImpl implements FootprintService{
         Guestbook guestbook = guestbookRepository
                 .findById(footprintRequest.guestbook())
                 .orElseThrow(()-> new BusinessException(GUESTBOOK_ID_NOT_EXIST));
-        if(!checkLocation(guestbook,footprintRequest)){
+        if(!checkLocation(guestbook.getLatitude()
+                ,guestbook.getLongitude()
+                ,footprintRequest.latitude()
+                ,footprintRequest.longitude())){
             throw new BusinessException(OUT_OF_AREA);
         }
         footprint.encodingPassword(passwordEncoder);
@@ -98,6 +108,27 @@ public class FootprintServiceImpl implements FootprintService{
         }
     }
 
+    @Transactional
+    @Override
+    public void createPhoto(PhotoRequest photoRequest, MultipartFile photo) {
+        Photo photoEntity = modelMapper.map(photoRequest,Photo.class);
+        Guestbook guestbook = guestbookRepository
+                .findById(photoRequest.guestbook())
+                .orElseThrow(()-> new BusinessException(GUESTBOOK_ID_NOT_EXIST));
+        if(!checkLocation(guestbook.getLatitude()
+                ,guestbook.getLongitude()
+                ,photoRequest.latitude()
+                ,photoRequest.longitude())){
+            throw new BusinessException(OUT_OF_AREA);
+        }
+        photoEntity.encodingPassword(passwordEncoder);
+        guestbook.setUpdate(true);
+        photoEntity.setGuestbook(guestbook);
+        String uploadPath = imageUploader.upload(photo);
+        photoEntity.setFileName(uploadPath);
+        photoRepository.save(photoEntity);
+    }
+
     private Footprint checkFootprintAuthority(long footprintId, FootprintPassword footprintPassword) {
         Footprint footprint = footprintRepository.findById(footprintId).orElseThrow(()-> new BusinessException(FOOTPRINT_ID_NOT_EXIST));
         String loginId = null;
@@ -114,13 +145,7 @@ public class FootprintServiceImpl implements FootprintService{
     }
 
     //좌표(위도,경도)를 이용한 거리계산
-    public boolean checkLocation(Guestbook guestbook,FootprintRequest footprintRequest){
-        double latBook = guestbook.getLatitude();
-        double lonBook = guestbook.getLongitude();
-
-        double latFoot = footprintRequest.latitude();
-        double lonFoot = footprintRequest.longitude();
-
+    public boolean checkLocation(double latBook,double lonBook,double latFoot,double lonFoot){
         double theta = lonBook - lonFoot;
         double dist = Math.sin(Math.toRadians(latBook))
                 * Math.sin(Math.toRadians(latFoot))

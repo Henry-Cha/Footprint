@@ -5,13 +5,16 @@ import com.meow.footprint.domain.footprint.dto.FootprintPassword;
 import com.meow.footprint.domain.footprint.dto.FootprintRequest;
 import com.meow.footprint.domain.footprint.dto.FootprintResponse;
 import com.meow.footprint.domain.footprint.service.FootprintService;
+import com.meow.footprint.domain.footprint.dto.PhotoRequest;
 import com.meow.footprint.global.result.ResultCode;
 import com.meow.footprint.global.result.ResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/footprints")
@@ -52,5 +55,13 @@ public class FootprintController {
     public ResponseEntity<ResultResponse> readCheckFootprint(@PathVariable long footprintId){
         footprintService.readCheckFootprint(footprintId);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.READ_FOOTPRINT_SUCCESS));
+    }
+
+    @Operation(summary = "발자국 사진 등록")
+    @PostMapping(value = "/photos",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ResultResponse> createPhoto(@RequestPart PhotoRequest photoRequest
+            , @RequestPart(value = "photo", required = false) MultipartFile photo){
+        footprintService.createPhoto(photoRequest,photo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.of(ResultCode.CREATE_PHOTO_SUCCESS));
     }
 }
