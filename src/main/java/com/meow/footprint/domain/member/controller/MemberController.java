@@ -21,12 +21,14 @@ import static com.meow.footprint.global.result.ResultCode.*;
 public class MemberController {
 	private final MemberService memberService;
 
+	@Operation(summary = "Email인증 코드 전송")
 	@GetMapping("/emails/code")
 	public ResponseEntity<ResultResponse> sendMessage(String email) {
 		memberService.sendCodeToEmail(email);
 		return ResponseEntity.ok(ResultResponse.of(SEND_CODE_EMAIL_SUCCESS));
 	}
 
+	@Operation(summary = "Email인증 코드 검사")
 	@PostMapping("/emails/code")
 	public ResponseEntity<ResultResponse> verificationEmail(EmailVerificationRequest emailVerificationRequest) {
 		memberService.verifiedCode(emailVerificationRequest);
