@@ -8,21 +8,26 @@ import com.meow.footprint.global.result.error.exception.EntityAlreadyExistExcept
 import com.meow.footprint.global.result.error.exception.EntityNotFoundException;
 import com.meow.footprint.global.util.AccountUtil;
 import com.meow.footprint.global.util.JWTTokenProvider;
+import com.meow.footprint.global.util.MailUtil;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import static com.meow.footprint.global.result.error.ErrorCode.*;
@@ -38,6 +43,11 @@ public class MemberServiceImpl implements MemberService {
     private final JWTTokenProvider jwtTokenProvider;
     private final AccountUtil accountUtil;
     private final RedisTemplate redisTemplate;
+    private final MailUtil mailUtil;
+    private static final String AUTH_CODE_PREFIX = "AuthCode ";
+    private static final int AUTH_CODE_LENGTH = 6;
+    @Value("${spring.mail.auth-code-expiration-millis}")
+    private long authCodeExpirationMillis;
 
     @Transactional
     @Override
@@ -164,5 +174,38 @@ public class MemberServiceImpl implements MemberService {
         }
         member.setPassword(passwordUpdateRequest.newPassword());
         member.encodingPassword(passwordEncoder);
+    }
+
+    @Override
+    public void sendCodeToEmail(String email) {
+        if(memberRepository.existsById(email))
+            throw new EntityAlreadyExistException(MEMBER_ID_ALREADY_EXIST);
+        String title = "Footprint - 이메일 인증 번호";
+        String authCode = createCode();
+        mailUtil.createMimeEmailForm(email, title, authCode);
+        // 이메일 인증 요청 시 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
+        redisTemplate.opsForValue().set(AUTH_CODE_PREFIX+email,authCode,Duration.ofMillis(this.authCodeExpirationMillis));
+    }
+
+    @Override
+    public void verifiedCode(EmailVerificationRequest emailVerificationRequest) {
+        if(memberRepository.existsById(emailVerificationRequest.email()))
+            throw new EntityAlreadyExistException(MEMBER_ID_ALREADY_EXIST);
+        String redisAuthCode = (String) redisTemplate.opsForValue().get(AUTH_CODE_PREFIX + emailVerificationRequest.email());
+        if(redisAuthCode==null || !redisAuthCode.equals(emailVerificationRequest.authCode()))
+            throw new BusinessException(FAIL_TO_VERIFICATION_EMAIL);
+    }
+
+    private String createCode() {
+        try {
+            Random random = SecureRandom.getInstanceStrong();
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < AUTH_CODE_LENGTH; i++) {
+                builder.append(random.nextInt(10));
+            }
+            return builder.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new BusinessException(INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -16,6 +16,8 @@ public enum ResultCode {
     LOGIN_SUCCESS(200,  "로그인에 성공하였습니다."),
     LOGOUT_SUCCESS(200,  "로그아웃에 성공하였습니다."),
     PASSWORD_UPDATE_SUCCESS(200,  "비밀번호 변경에 성공하였습니다."),
+    SEND_CODE_EMAIL_SUCCESS(200,  "이메일 인증코드 발송에 성공하였습니다."),
+    EMAIL_VERIFICATION_SUCCESS(200,  "이메일 인증에 성공하였습니다."),
 
     // Guestbook
     CREATE_GUESTBOOK_SUCCESS(201,"방명록 생성에 성공하였습니다."),

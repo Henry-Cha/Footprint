@@ -20,6 +20,18 @@ import static com.meow.footprint.global.result.ResultCode.*;
 @RequiredArgsConstructor
 public class MemberController {
 	private final MemberService memberService;
+
+	@GetMapping("/emails/code")
+	public ResponseEntity<ResultResponse> sendMessage(String email) {
+		memberService.sendCodeToEmail(email);
+		return ResponseEntity.ok(ResultResponse.of(SEND_CODE_EMAIL_SUCCESS));
+	}
+
+	@PostMapping("/emails/code")
+	public ResponseEntity<ResultResponse> verificationEmail(EmailVerificationRequest emailVerificationRequest) {
+		memberService.verifiedCode(emailVerificationRequest);
+		return ResponseEntity.ok(ResultResponse.of(EMAIL_VERIFICATION_SUCCESS));
+	}
 	
 	@Operation(summary = "회원가입",description = "회원 정보를 입력받아 가입합니다.")
 	@ApiResponses(value = {

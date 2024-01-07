@@ -21,4 +21,8 @@ public interface MemberService {
     LoginTokenDTO reissue(LoginTokenDTO loginTokenDTO);
 
     void updatePassword(PasswordUpdateRequest passwordUpdateRequest, String memberId);
+
+    void sendCodeToEmail(String email);
+
+    void verifiedCode(EmailVerificationRequest emailVerificationRequest);
 }
