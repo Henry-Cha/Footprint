@@ -13,6 +13,13 @@ import org.springframework.stereotype.Component;
 public class AccountUtil {
     private final MemberRepository memberRepository;
 
+    public boolean isLogin(){
+        try {
+            return !SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser");
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+    }
     public String getLoginMemberId() {
         try {
             return SecurityContextHolder.getContext().getAuthentication().getName();
