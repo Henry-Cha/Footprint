@@ -57,8 +57,8 @@ public class GuestbookController {
     }
     @Operation(summary = "방명록 QR 조회")
     @GetMapping("/{guestbookId}/qr")
-    public ResponseEntity<ResultResponse> getGuestbookQr(@PathVariable long guestbookId, GuestbookQrRequest qrRequest){
-        GuestbookQrResponse qrResponse = guestbookService.getGuestbookQr(guestbookId,qrRequest);
+    public ResponseEntity<ResultResponse> getGuestbookQr(@PathVariable long guestbookId, String qrLink){
+        GuestbookQrResponse qrResponse = guestbookService.getGuestbookQr(guestbookId,qrLink);
         return ResponseEntity.ok(ResultResponse.of(GET_GUESTBOOK_QR_SUCCESS,qrResponse));
     }
 }

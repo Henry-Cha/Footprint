@@ -80,10 +80,10 @@ public class GuestbookServiceImpl implements GuestbookService{
 
     @Transactional
     @Override
-    public GuestbookQrResponse getGuestbookQr(long guestbookId, GuestbookQrRequest qrRequest) {
+    public GuestbookQrResponse getGuestbookQr(long guestbookId, String qrLink) {
         Guestbook guestbook = guestbookRepository.findById(guestbookId).orElseThrow(()->new BusinessException(ErrorCode.GUESTBOOK_ID_NOT_EXIST));
         if(guestbook.getQrCode() == null || guestbook.getQrCode().isEmpty()){
-            String qrCode = qrCodeUtil.qrCodeGenerate(guestbookId,qrRequest.link());
+            String qrCode = qrCodeUtil.qrCodeGenerate(guestbookId,qrLink);
             guestbook.setQrCode(qrCode);
         }
         return new GuestbookQrResponse(guestbook.getQrCode());

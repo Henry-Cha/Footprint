@@ -16,5 +16,5 @@ public interface GuestbookService {
 
     GuestbookSimpleResponse getGuestbookSimple(long guestbookId);
 
-    GuestbookQrResponse getGuestbookQr(long guestbookId, GuestbookQrRequest qrRequest);
+    GuestbookQrResponse getGuestbookQr(long guestbookId, String qrLink);
 }
