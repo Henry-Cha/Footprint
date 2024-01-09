@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -22,13 +21,10 @@ public class Photo {
     @ManyToOne(fetch = FetchType.LAZY)
     private Guestbook guestbook;
     private String writer;
+    private String memberId;
     private boolean isSecret;
-    private String password;
     private String fileName;
     @CreatedDate
     private LocalDateTime createTime;
 
-    public void encodingPassword(PasswordEncoder encoder){
-        this.password = encoder.encode(password);
-    }
 }

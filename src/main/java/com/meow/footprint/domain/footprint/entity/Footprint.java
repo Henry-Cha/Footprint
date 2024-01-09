@@ -6,7 +6,6 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -23,16 +22,13 @@ public class Footprint {
     @ManyToOne(fetch = FetchType.LAZY)
     private Guestbook guestbook;
     private String writer;
+    private String memberId;
     private String content;
     @ColumnDefault("false")
     private boolean isSecret;
-    private String password;
     @ColumnDefault("false")
     private boolean isChecked;
     @CreatedDate
     private LocalDateTime createTime;
 
-    public void encodingPassword(PasswordEncoder encoder){
-        this.password = encoder.encode(password);
-    }
 }

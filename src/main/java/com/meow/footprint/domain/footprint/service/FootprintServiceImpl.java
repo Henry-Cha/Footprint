@@ -7,7 +7,6 @@ import com.meow.footprint.domain.footprint.repository.FootprintRepository;
 import com.meow.footprint.domain.footprint.repository.PhotoRepository;
 import com.meow.footprint.domain.guestbook.entity.Guestbook;
 import com.meow.footprint.domain.guestbook.repository.GuestbookRepository;
-import com.meow.footprint.domain.footprint.dto.PhotoRequest;
 import com.meow.footprint.global.result.error.exception.BusinessException;
 import com.meow.footprint.global.util.AccountUtil;
 import com.meow.footprint.global.util.ImageUploader;
@@ -17,7 +16,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +34,6 @@ public class FootprintServiceImpl implements FootprintService{
     private final GuestbookRepository guestbookRepository;
     private final PhotoRepository photoRepository;
     private final ModelMapper modelMapper;
-    private final PasswordEncoder passwordEncoder;
     private final AccountUtil accountUtil;
     private final ImageUploader imageUploader;
     private static final int DEGREE = 100; //발자국 작성 가능 범위
@@ -54,16 +51,22 @@ public class FootprintServiceImpl implements FootprintService{
                 ,footprintRequest.longitude())){
             throw new BusinessException(OUT_OF_AREA);
         }
-        footprint.encodingPassword(passwordEncoder);
         guestbook.setUpdate(true);
         footprint.setGuestbook(guestbook);
+        try {
+            if(accountUtil.isLogin()) {
+                footprint.setMemberId(accountUtil.getLoginMemberId());
+            }
+        }catch (RuntimeException e){
+            log.info("잘못된 Authentication");
+        }
         footprintRepository.save(footprint);
     }
 
     @Transactional
     @Override
-    public FootprintResponse getSecretFootprint(long footprintId, FootprintPassword footprintPassword) {
-        Footprint footprint = checkFootprintAuthority(footprintId, footprintPassword);
+    public FootprintResponse getSecretFootprint(long footprintId) {
+        Footprint footprint = checkFootprintAuthority(footprintId);
         footprint.setChecked(true);
         return FootprintResponse.from(footprint);
     }
@@ -88,8 +91,8 @@ public class FootprintServiceImpl implements FootprintService{
 
     @Transactional
     @Override
-    public void deleteFootprint(long footprintId, FootprintPassword footprintPassword) {
-        Footprint footprint = checkFootprintAuthority(footprintId, footprintPassword);
+    public void deleteFootprint(long footprintId) {
+        Footprint footprint = checkFootprintAuthority(footprintId);
         footprintRepository.delete(footprint);
     }
 
@@ -121,29 +124,31 @@ public class FootprintServiceImpl implements FootprintService{
                 ,photoRequest.longitude())){
             throw new BusinessException(OUT_OF_AREA);
         }
-        photoEntity.encodingPassword(passwordEncoder);
         guestbook.setUpdate(true);
         photoEntity.setGuestbook(guestbook);
         String uploadPath = imageUploader.upload(photo);
         photoEntity.setFileName(uploadPath);
+        try {
+            if(accountUtil.isLogin()) {
+                photoEntity.setMemberId(accountUtil.getLoginMemberId());
+            }
+        }catch (RuntimeException e){
+            log.info("잘못된 Authentication");
+        }
         photoRepository.save(photoEntity);
     }
 
     @Transactional
     @Override
-    public void deletePhoto(long photoId, FootprintPassword footprintPassword) {
-        Photo photo = photoRepository.findById(photoId).orElseThrow(()-> new BusinessException(PHOTO_ID_NOT_EXIST));
-        String loginId = null;
-        try {
-            loginId = accountUtil.getLoginMemberId();
-        }catch (RuntimeException e){
-            log.info("토큰없음");
-        }
-        if(!passwordEncoder.matches(footprintPassword.password(), photo.getPassword())
-                && !photo.getGuestbook().getHost().getId().equals(loginId)) {
+    public void deletePhoto(long photoId) {
+        if(!accountUtil.isLogin())
             throw new BusinessException(FORBIDDEN_ERROR);
-        }
-        // TODO: 2024-01-05 코드 리팩토링 필요
+
+        Photo photo = photoRepository.findById(photoId).orElseThrow(()-> new BusinessException(PHOTO_ID_NOT_EXIST));
+        String loginId = accountUtil.getLoginMemberId();
+        if(!photo.getMemberId().equals(loginId)
+                && !photo.getGuestbook().getHost().getId().equals(loginId))
+            throw new BusinessException(FORBIDDEN_ERROR);
         photoRepository.delete(photo);
     }
 
@@ -165,18 +170,15 @@ public class FootprintServiceImpl implements FootprintService{
                 ,responseSlice.isLast());
     }
 
-    private Footprint checkFootprintAuthority(long footprintId, FootprintPassword footprintPassword) {
-        Footprint footprint = footprintRepository.findById(footprintId).orElseThrow(()-> new BusinessException(FOOTPRINT_ID_NOT_EXIST));
-        String loginId = null;
-        try {
-            loginId = accountUtil.getLoginMemberId();
-        }catch (RuntimeException e){
-            log.info("토큰없음");
-        }
-        if(!passwordEncoder.matches(footprintPassword.password(), footprint.getPassword())
-                && !footprint.getGuestbook().getHost().getId().equals(loginId)) {
+    private Footprint checkFootprintAuthority(long footprintId) {
+        if(!accountUtil.isLogin())
             throw new BusinessException(FORBIDDEN_ERROR);
-        }
+
+        Footprint footprint = footprintRepository.findById(footprintId).orElseThrow(()-> new BusinessException(FOOTPRINT_ID_NOT_EXIST));
+        String loginId = accountUtil.getLoginMemberId();
+        if(!footprint.getMemberId().equals(loginId)
+                && !footprint.getGuestbook().getHost().getId().equals(loginId))
+            throw new BusinessException(FORBIDDEN_ERROR);
         return footprint;
     }
 
