@@ -23,7 +23,7 @@ public class FootprintController {
 
     @Operation(summary = "발자국 생성")
     @PostMapping("")
-    public ResponseEntity<ResultResponse> createFootprint(FootprintRequest footprintRequest){
+    public ResponseEntity<ResultResponse> createFootprint(@RequestBody FootprintRequest footprintRequest){
         footprintService.createFootprint(footprintRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.of(ResultCode.CREATE_FOOTPRINT_SUCCESS));
     }

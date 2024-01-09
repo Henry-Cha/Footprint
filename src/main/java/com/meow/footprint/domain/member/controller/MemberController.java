@@ -30,7 +30,7 @@ public class MemberController {
 
 	@Operation(summary = "Email인증 코드 검사")
 	@PostMapping("/emails/code")
-	public ResponseEntity<ResultResponse> verificationEmail(EmailVerificationRequest emailVerificationRequest) {
+	public ResponseEntity<ResultResponse> verificationEmail(@RequestBody EmailVerificationRequest emailVerificationRequest) {
 		memberService.verifiedCode(emailVerificationRequest);
 		return ResponseEntity.ok(ResultResponse.of(EMAIL_VERIFICATION_SUCCESS));
 	}
