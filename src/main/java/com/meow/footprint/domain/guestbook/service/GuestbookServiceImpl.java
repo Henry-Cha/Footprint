@@ -1,8 +1,6 @@
 package com.meow.footprint.domain.guestbook.service;
 
-import com.meow.footprint.domain.guestbook.dto.GuestBookRequest;
-import com.meow.footprint.domain.guestbook.dto.GuestbookDTO;
-import com.meow.footprint.domain.guestbook.dto.GuestbookSimpleResponse;
+import com.meow.footprint.domain.guestbook.dto.*;
 import com.meow.footprint.domain.guestbook.entity.Guestbook;
 import com.meow.footprint.domain.guestbook.repository.GuestbookRepository;
 import com.meow.footprint.domain.member.entity.Member;
@@ -10,6 +8,7 @@ import com.meow.footprint.global.result.error.ErrorCode;
 import com.meow.footprint.global.result.error.exception.BusinessException;
 import com.meow.footprint.global.util.AccountUtil;
 import com.meow.footprint.global.util.ImageUploader;
+import com.meow.footprint.global.util.QrCodeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -28,6 +27,7 @@ public class GuestbookServiceImpl implements GuestbookService{
     private final GuestbookRepository guestbookRepository;
     private final ImageUploader imageUploader;
     private final AccountUtil accountUtil;
+    private final QrCodeUtil qrCodeUtil;
     private final ModelMapper modelMapper;
 
     @Transactional
@@ -76,5 +76,16 @@ public class GuestbookServiceImpl implements GuestbookService{
     public GuestbookSimpleResponse getGuestbookSimple(long guestbookId) {
         Guestbook guestbook = guestbookRepository.findById(guestbookId).orElseThrow(()-> new BusinessException(ErrorCode.GUESTBOOK_ID_NOT_EXIST));
         return GuestbookSimpleResponse.from(guestbook);
+    }
+
+    @Transactional
+    @Override
+    public GuestbookQrResponse getGuestbookQr(long guestbookId, GuestbookQrRequest qrRequest) {
+        Guestbook guestbook = guestbookRepository.findById(guestbookId).orElseThrow(()->new BusinessException(ErrorCode.GUESTBOOK_ID_NOT_EXIST));
+        if(guestbook.getQrCode() == null || guestbook.getQrCode().isEmpty()){
+            String qrCode = qrCodeUtil.qrCodeGenerate(guestbookId,qrRequest.link());
+            guestbook.setQrCode(qrCode);
+        }
+        return new GuestbookQrResponse(guestbook.getQrCode());
     }
 }

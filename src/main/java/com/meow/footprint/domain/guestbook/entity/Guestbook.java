@@ -35,6 +35,7 @@ public class Guestbook {
     private String address;
     @CreatedDate
     private LocalDateTime createTime;
+    private String qrCode;
 
     public Guestbook(GuestBookRequest guestBookRequest){
         this.name = guestBookRequest.getName();

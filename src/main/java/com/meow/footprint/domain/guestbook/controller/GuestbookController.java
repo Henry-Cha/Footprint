@@ -1,8 +1,6 @@
 package com.meow.footprint.domain.guestbook.controller;
 
-import com.meow.footprint.domain.guestbook.dto.GuestBookRequest;
-import com.meow.footprint.domain.guestbook.dto.GuestbookDTO;
-import com.meow.footprint.domain.guestbook.dto.GuestbookSimpleResponse;
+import com.meow.footprint.domain.guestbook.dto.*;
 import com.meow.footprint.domain.guestbook.service.GuestbookService;
 import com.meow.footprint.global.result.ResultCode;
 import com.meow.footprint.global.result.ResultResponse;
@@ -56,5 +54,11 @@ public class GuestbookController {
     public ResponseEntity<ResultResponse> getGuestbookSimple(@PathVariable long guestbookId){
         GuestbookSimpleResponse simpleResponse = guestbookService.getGuestbookSimple(guestbookId);
         return ResponseEntity.ok(ResultResponse.of(GET_GUESTBOOK_SIMPLE_SUCCESS,simpleResponse));
+    }
+    @Operation(summary = "방명록 QR 조회")
+    @GetMapping("/{guestbookId}/qr")
+    public ResponseEntity<ResultResponse> getGuestbookQr(@PathVariable long guestbookId, GuestbookQrRequest qrRequest){
+        GuestbookQrResponse qrResponse = guestbookService.getGuestbookQr(guestbookId,qrRequest);
+        return ResponseEntity.ok(ResultResponse.of(GET_GUESTBOOK_QR_SUCCESS,qrResponse));
     }
 }

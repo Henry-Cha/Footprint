@@ -35,6 +35,7 @@ public enum ErrorCode {
 
     //guestbook
     GUESTBOOK_ID_NOT_EXIST(400,"존재하지 않는 방명록id입니다."),
+    FAIL_TO_QR_GEN(400,"큐알코드 생성에 실패하였습니다."),
 
     //footprint
     OUT_OF_AREA(400,"발자국 작성은 일정 범위 내에서만 가능합니다."),

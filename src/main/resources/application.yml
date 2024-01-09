@@ -52,3 +52,8 @@ cloud:
       static: ap-northeast-2
     stack:
       auto: false
+
+qrCode:
+  width: 300
+  height: 300
+  type: png

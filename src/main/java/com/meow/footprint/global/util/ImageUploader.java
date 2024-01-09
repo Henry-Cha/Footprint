@@ -12,7 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -26,6 +29,20 @@ public class ImageUploader {
     private String uploadPath;
     @Value("${cloud.aws.s3.bucket}")
     public String bucket; // S3 버킷 이름
+
+    public String uploadBufferedImage(BufferedImage bufferedImage, String fileName) throws IOException {
+        String uuid = UUID.randomUUID().toString();
+        String saveFileName = uuid + "_" + fileName;
+        Path savePath = Paths.get(uploadPath, saveFileName);
+        File qrFile = savePath.toFile();
+        ImageIO.write(bufferedImage, "png", qrFile);
+        if(uploadPath.startsWith("/home/")) {
+            String uploadImageUrl = putS3(qrFile, qrFile.getName()); // s3로업로드
+            removeOriginalFile(qrFile);
+            return uploadImageUrl;
+        }
+        return qrFile.getAbsolutePath();
+    }
 
     public String upload(MultipartFile multipartFile) {
         if (multipartFile == null || multipartFile.isEmpty()) {
