@@ -52,6 +52,7 @@ public class FootprintServiceImpl implements FootprintService{
             throw new BusinessException(OUT_OF_AREA);
         }
         guestbook.setUpdate(true);
+        guestbook.countUp();
         footprint.setGuestbook(guestbook);
         try {
             if(accountUtil.isLogin()) {

@@ -50,4 +50,7 @@ public class Guestbook {
         this.longitude = guestBookRequest.getLongitude()==null?this.latitude:guestBookRequest.getLongitude();
         this.address = guestBookRequest.getAddress()==null?this.address:guestBookRequest.getAddress();
     }
+    public void countUp(){
+        this.footprintCount+=1;
+    }
 }
