@@ -17,7 +17,7 @@ public class FootprintRepositoryQuerydslImpl implements FootprintRepositoryQuery
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Slice<FootprintResponse> getFootprintListByDate(String guestbookId, Pageable pageable) {
+    public Slice<FootprintResponse> getFootprintListByDate(long guestbookId, Pageable pageable) {
         List<FootprintResponse> footprintResponseList = jpaQueryFactory.select(Projections.fields(
                         FootprintResponse.class
                         , footprint.id
@@ -28,7 +28,7 @@ public class FootprintRepositoryQuerydslImpl implements FootprintRepositoryQuery
                         , footprint.isSecret
                 ))
                 .from(footprint)
-                .where(footprint.guestbook.id.eq(Long.valueOf(guestbookId)))
+                .where(footprint.guestbook.id.eq(guestbookId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize()+1)
                 .orderBy(footprint.createTime.desc())

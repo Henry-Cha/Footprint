@@ -5,5 +5,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 public interface PhotoRepositoryQuerydsl {
-    Slice<PhotoResponse> getPhotoListByDate(String guestbookId, Pageable pageable);
+    Slice<PhotoResponse> getPhotoListByDate(long guestbookId, Pageable pageable);
 }

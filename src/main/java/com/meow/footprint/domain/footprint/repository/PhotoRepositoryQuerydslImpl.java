@@ -17,7 +17,7 @@ public class PhotoRepositoryQuerydslImpl implements PhotoRepositoryQuerydsl {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Slice<PhotoResponse> getPhotoListByDate(String guestbookId, Pageable pageable) {
+    public Slice<PhotoResponse> getPhotoListByDate(long guestbookId, Pageable pageable) {
         List<PhotoResponse> photoResponseList = jpaQueryFactory.select(Projections.fields(
                         PhotoResponse.class
                         , photo.id
@@ -27,7 +27,7 @@ public class PhotoRepositoryQuerydslImpl implements PhotoRepositoryQuerydsl {
                         , photo.isSecret
                 ))
                 .from(photo)
-                .where(photo.guestbook.id.eq(Long.valueOf(guestbookId)))
+                .where(photo.guestbook.id.eq(guestbookId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize()+1)
                 .orderBy(photo.createTime.desc())

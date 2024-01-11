@@ -5,5 +5,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 public interface FootprintRepositoryQuerydsl {
-    Slice<FootprintResponse> getFootprintListByDate(String guestbookId, Pageable pageable);
+    Slice<FootprintResponse> getFootprintListByDate(long guestbookId, Pageable pageable);
 }

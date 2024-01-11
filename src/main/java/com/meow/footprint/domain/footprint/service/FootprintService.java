@@ -11,7 +11,7 @@ public interface FootprintService {
 
     FootprintResponse getSecretFootprint(long footprintId);
 
-    FootprintByDateSliceDTO getFootprintListByDate(String guestbookId, int page, int size);
+    FootprintByDateSliceDTO getFootprintListByDate(long guestbookId, int page, int size);
 
     void deleteFootprint(long footprintId);
 
@@ -21,5 +21,5 @@ public interface FootprintService {
 
     void deletePhoto(long photoId);
 
-    FootprintByDateSliceDTO getPhotoListByDate(String guestbookId, int page, int size);
+    FootprintByDateSliceDTO getPhotoListByDate(long guestbookId, int page, int size);
 }

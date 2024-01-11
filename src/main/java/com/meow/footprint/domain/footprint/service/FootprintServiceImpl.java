@@ -73,7 +73,7 @@ public class FootprintServiceImpl implements FootprintService{
     }
 
     @Override
-    public FootprintByDateSliceDTO getFootprintListByDate(String guestbookId, int page, int size) {
+    public FootprintByDateSliceDTO getFootprintListByDate(long guestbookId, int page, int size) {
         Pageable pageable = PageRequest.of(page,size);
         Slice<FootprintResponse> responseSlice = footprintRepository.getFootprintListByDate(guestbookId,pageable);
 
@@ -154,7 +154,7 @@ public class FootprintServiceImpl implements FootprintService{
     }
 
     @Override
-    public FootprintByDateSliceDTO getPhotoListByDate(String guestbookId, int page, int size) {
+    public FootprintByDateSliceDTO getPhotoListByDate(long guestbookId, int page, int size) {
         Pageable pageable = PageRequest.of(page,size);
         Slice<PhotoResponse> responseSlice = photoRepository.getPhotoListByDate(guestbookId,pageable);
 

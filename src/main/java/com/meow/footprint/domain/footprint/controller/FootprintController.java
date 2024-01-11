@@ -37,7 +37,7 @@ public class FootprintController {
 
     @Operation(summary = "발자국 목록 조회 (날짜 별 묶음)")
     @GetMapping("")
-    public ResponseEntity<ResultResponse> getFootprintListByDate(String guestbookId,int page,int size){
+    public ResponseEntity<ResultResponse> getFootprintListByDate(long guestbookId,int page,int size){
         FootprintByDateSliceDTO sliceDTO = footprintService.getFootprintListByDate(guestbookId,page,size);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_FOOTPRINT_LIST_SUCCESS,sliceDTO));
     }
@@ -73,7 +73,7 @@ public class FootprintController {
 
     @Operation(summary = "발자국 사진 목록 조회 (날짜 별 묶음)")
     @GetMapping("/photos")
-    public ResponseEntity<ResultResponse> getPhotoListByDate(String guestbookId,int page,int size){
+    public ResponseEntity<ResultResponse> getPhotoListByDate(long guestbookId,int page,int size){
         FootprintByDateSliceDTO sliceDTO = footprintService.getPhotoListByDate(guestbookId,page,size);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.GET_PHOTO_LIST_SUCCESS,sliceDTO));
     }
