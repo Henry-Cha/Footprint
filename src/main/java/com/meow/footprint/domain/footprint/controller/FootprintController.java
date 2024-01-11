@@ -65,7 +65,7 @@ public class FootprintController {
     }
 
     @Operation(summary = "발자국 사진 삭제")
-    @PostMapping(value = "/photos/{photoId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @DeleteMapping(value = "/photos/{photoId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResultResponse> deletePhoto(@PathVariable long photoId){
         footprintService.deletePhoto(photoId);
         return ResponseEntity.ok(ResultResponse.of(ResultCode.DELETE_PHOTO_SUCCESS));
