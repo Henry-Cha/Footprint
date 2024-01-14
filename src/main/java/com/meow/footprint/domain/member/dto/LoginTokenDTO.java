@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class LoginTokenDTO {
-    String userId;
-    String accessToken;
-    String refreshToken;
+    private String userId;
+    private String accessToken;
+    private String refreshToken;
 }

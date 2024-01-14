@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FootprintResponse {
-    long id;
-    String writer;
-    String content;
-    LocalDateTime createTime;
-    boolean isChecked;
-    boolean isSecret;
+    private long id;
+    private String writer;
+    private String content;
+    private LocalDateTime createTime;
+    private boolean isChecked;
+    private boolean isSecret;
 
     public static FootprintResponse from(Footprint footprint){
         return new FootprintResponse(footprint.getId(),

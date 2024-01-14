@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PhotoResponse {
-    long id;
-    String writer;
-    String fileName;
-    LocalDateTime createTime;
-    boolean isSecret;
+    private long id;
+    private String writer;
+    private String fileName;
+    private LocalDateTime createTime;
+    private boolean isSecret;
 
     public static PhotoResponse from(Photo photo){
         return new PhotoResponse(photo.getId(),

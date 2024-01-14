@@ -9,9 +9,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FootprintByDateSliceDTO {
-    List<FootprintByDateDTO> footprintByDateDTOList;
-    int pageNumber;
-    int pageSize;
-    boolean first;
-    boolean last;
+    private List<FootprintByDateDTO> footprintByDateDTOList;
+    private int pageNumber;
+    private int pageSize;
+    private boolean first;
+    private boolean last;
 }

@@ -7,10 +7,10 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class GuestBookRequest {
-    String name;
-    String description;
-    Double latitude;
-    Double longitude;
-    String addressSigungu;
-    String addressDong;
+    private String name;
+    private String description;
+    private Double latitude;
+    private Double longitude;
+    private String addressSigungu;
+    private String addressDong;
 }
