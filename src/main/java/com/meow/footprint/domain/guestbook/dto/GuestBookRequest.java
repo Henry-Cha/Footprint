@@ -11,5 +11,6 @@ public class GuestBookRequest {
     String description;
     Double latitude;
     Double longitude;
-    String address;
+    String addressSigungu;
+    String addressDong;
 }

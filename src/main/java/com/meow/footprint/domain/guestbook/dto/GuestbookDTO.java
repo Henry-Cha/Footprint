@@ -18,6 +18,7 @@ public class GuestbookDTO {
     private boolean isUpdate;
     private double latitude;
     private double longitude;
-    private String address;
+    private String addressSigungu;
+    private String addressDong;
     private LocalDateTime createTime;
 }

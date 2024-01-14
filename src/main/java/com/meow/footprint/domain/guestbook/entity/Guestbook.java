@@ -32,7 +32,8 @@ public class Guestbook {
     private boolean isUpdate;
     private double latitude;
     private double longitude;
-    private String address;
+    private String addressSigungu;
+    private String addressDong;
     @CreatedDate
     private LocalDateTime createTime;
     private String qrCode;
@@ -42,14 +43,16 @@ public class Guestbook {
         this.description = guestBookRequest.getDescription();
         this.latitude = guestBookRequest.getLatitude();
         this.longitude = guestBookRequest.getLongitude();
-        this.address = guestBookRequest.getAddress();
+        this.addressSigungu = guestBookRequest.getAddressSigungu();
+        this.addressDong = guestBookRequest.getAddressDong();
     }
     public void update(GuestBookRequest guestBookRequest){
         this.name = guestBookRequest.getName()==null?this.name:guestBookRequest.getName();
         this.description = guestBookRequest.getDescription()==null?this.description:guestBookRequest.getDescription();
         this.latitude = guestBookRequest.getLatitude()==null?this.latitude:guestBookRequest.getLatitude();
         this.longitude = guestBookRequest.getLongitude()==null?this.latitude:guestBookRequest.getLongitude();
-        this.address = guestBookRequest.getAddress()==null?this.address:guestBookRequest.getAddress();
+        this.addressSigungu = guestBookRequest.getAddressSigungu()==null?this.addressSigungu:guestBookRequest.getAddressSigungu();
+        this.addressDong = guestBookRequest.getAddressDong()==null?this.addressDong:guestBookRequest.getAddressDong();
     }
     public void countUp(){
         this.footprintCount+=1;
