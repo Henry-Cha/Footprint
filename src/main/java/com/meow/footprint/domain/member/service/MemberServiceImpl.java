@@ -2,6 +2,7 @@ package com.meow.footprint.domain.member.service;
 
 import com.meow.footprint.domain.member.dto.*;
 import com.meow.footprint.domain.member.entity.Member;
+import com.meow.footprint.domain.member.entity.Role;
 import com.meow.footprint.domain.member.repository.MemberRepository;
 import com.meow.footprint.global.result.error.exception.BusinessException;
 import com.meow.footprint.global.result.error.exception.EntityAlreadyExistException;
@@ -55,6 +56,7 @@ public class MemberServiceImpl implements MemberService {
         Member member = modelMapper.map(joinRequest,Member.class);
         if(memberRepository.existsById(member.getId())) throw new EntityAlreadyExistException(MEMBER_ID_ALREADY_EXIST);
 
+        member.addRole(Role.ROLE_USER);
         member.encodingPassword(passwordEncoder);
         memberRepository.save(member);
     }

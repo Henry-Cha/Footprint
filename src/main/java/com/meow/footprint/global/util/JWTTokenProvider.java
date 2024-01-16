@@ -49,16 +49,15 @@ public class JWTTokenProvider {
     //사용자 정보를 기반으로 토큰을 생성하여 반환 해주는 메서드
     public String generateAccessToken(Member member) {
         // 권한 가져오기
-        String authority = "USER";
-//        authorities.stream()
-//                .map(GrantedAuthority::getAuthority)
-//                .collect(Collectors.joining(","));
+        String auth = member.getRole().stream()
+                .map(role -> new SimpleGrantedAuthority(role.name()).getAuthority())
+                .collect(Collectors.joining(","));
 
         return Jwts.builder() // TODO: 2023-12-24 토큰 권한 수정
                 .signWith(createKey())   // 서명
                 .setSubject(member.getId())  // JWT 토큰 제목
                 .setId("ATK")
-                .claim("auth",authority)  //권한정보 저장
+                .claim("auth",auth)  //권한정보 저장
                 .setExpiration(Date.from(ZonedDateTime.now().plusDays(tokenValidityTime).toInstant()))    // JWT 토큰 만료 시간
                 .compact();
     }
