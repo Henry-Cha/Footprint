@@ -156,11 +156,11 @@ public class MemberServiceImpl implements MemberService {
         long gapTime = (exp.getTime() - current.getTime());
         if(gapTime < (1000 * 60 * 60 * 24 * 3  ) ){
             log.info("new Refresh Token required...  ");
-            refreshToken = jwtTokenProvider.generateRefreshToken(member);
+            refreshToken = jwtTokenProvider.generateRefreshToken(member.getId());
             redisTemplate.opsForValue().set("RTK:"+userName,refreshToken, Duration.ofDays(jwtTokenProvider.getRefreshTokenValidityTime()));
         }
-
-        accessToken = jwtTokenProvider.generateAccessToken(member);
+        String auth = jwtTokenProvider.getAuthorities(member);
+        accessToken = jwtTokenProvider.generateAccessToken(member.getId(),auth);
         return new LoginTokenDTO(member.getId(),accessToken,refreshToken);
     }
 

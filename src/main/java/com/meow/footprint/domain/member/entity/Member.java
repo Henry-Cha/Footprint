@@ -15,6 +15,7 @@ import java.util.Set;
 @Getter @Setter
 @Entity
 @ToString
+@Builder
 @EntityListeners(value = { AuditingEntityListener.class })
 public class Member {
     @Id
@@ -24,6 +25,9 @@ public class Member {
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.LAZY)
     private Set<Role> role = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    private SocialType socialType;
+    private String oauthEmail;
     @CreatedDate
     private LocalDateTime joinDate;
 

@@ -44,27 +44,36 @@ public class JWTTokenProvider {
         return refreshTokenValidityTime;
     }
     public LoginTokenDTO getLoginResponse(Member member){
-        return new LoginTokenDTO(member.getId(), generateAccessToken(member),generateRefreshToken(member));
+        return new LoginTokenDTO(member.getId(), generateAccessToken(member.getId(),getAuthorities(member)),generateRefreshToken(member.getId()));
     }
-    //사용자 정보를 기반으로 토큰을 생성하여 반환 해주는 메서드
-    public String generateAccessToken(Member member) {
-        // 권한 가져오기
-        String auth = member.getRole().stream()
+    public LoginTokenDTO getLoginResponse(Authentication authentication){
+        String memberId = authentication.getName();
+        return new LoginTokenDTO(memberId, generateAccessToken(memberId,getAuthorities(authentication)),generateRefreshToken(memberId));
+    }
+    public String getAuthorities(Member member){
+        return member.getRole().stream()
                 .map(role -> new SimpleGrantedAuthority(role.name()).getAuthority())
                 .collect(Collectors.joining(","));
-
+    }
+    public String getAuthorities(Authentication authentication){
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+    }
+    //사용자 정보를 기반으로 토큰을 생성하여 반환 해주는 메서드
+    public String generateAccessToken(String id,String authorities) {
         return Jwts.builder() // TODO: 2023-12-24 토큰 권한 수정
                 .signWith(createKey())   // 서명
-                .setSubject(member.getId())  // JWT 토큰 제목
+                .setSubject(id)  // JWT 토큰 제목
                 .setId("ATK")
-                .claim("auth",auth)  //권한정보 저장
+                .claim("auth",authorities)  //권한정보 저장
                 .setExpiration(Date.from(ZonedDateTime.now().plusDays(tokenValidityTime).toInstant()))    // JWT 토큰 만료 시간
                 .compact();
     }
-    public String generateRefreshToken(Member member) {
+    public String generateRefreshToken(String id) {
         return Jwts.builder()
                 .signWith(createKey())   // 서명
-                .setSubject(member.getId())  // JWT 토큰 제목
+                .setSubject(id)  // JWT 토큰 제목
                 .setId("RTK")
                 .setExpiration(Date.from(ZonedDateTime.now().plusDays(refreshTokenValidityTime).toInstant()))    // JWT 토큰 만료 시간
                 .compact();
