@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meow.footprint.domain.member.dto.LoginTokenDTO;
 import com.meow.footprint.domain.member.entity.Member;
-import com.meow.footprint.global.result.error.exception.BusinessException;
+import com.meow.footprint.global.result.error.exception.TokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -96,11 +96,11 @@ public class JWTTokenProvider {
         try {
             return Jwts.parserBuilder().setSigningKey(createKey()).build().parseClaimsJws(token).getBody();
         } catch (SecurityException | MalformedJwtException | IllegalArgumentException e) {
-            throw new BusinessException(JWT_MALFORM);
+            throw new TokenException(JWT_MALFORM);
         } catch (ExpiredJwtException e) {
-            throw new BusinessException(JWT_EXPIRED);
+            throw new TokenException(JWT_EXPIRED);
         } catch (RuntimeException e) {
-            throw new BusinessException(JWT_INVALID);
+            throw new TokenException(JWT_INVALID);
         }
     }
     // 토큰의 정보로 Authentication 가져옴
@@ -109,7 +109,7 @@ public class JWTTokenProvider {
 
         // 클레임에서 권한 정보 가져오기
         if (claims.get("auth") == null) {
-            throw new BusinessException(JWT_INVALID);
+            throw new TokenException(JWT_INVALID);
         }
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("auth").toString().split(","))

@@ -1,6 +1,7 @@
 package com.meow.footprint.global.security.filter;
 
 import com.meow.footprint.global.result.error.exception.BusinessException;
+import com.meow.footprint.global.result.error.exception.TokenException;
 import com.meow.footprint.global.util.JWTTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,7 +12,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
@@ -20,7 +20,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Optional;
 
-import static com.meow.footprint.global.result.error.ErrorCode.*;
+import static com.meow.footprint.global.result.error.ErrorCode.BLACK_TOKEN;
+import static com.meow.footprint.global.result.error.ErrorCode.JWT_BADTYPE;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -57,16 +58,15 @@ public class JWTFilter extends OncePerRequestFilter {
             //토큰 유효성 검사
             if (jwtTokenProvider.validateAndGetClaims(token) != null) {
                 if (redisTemplate.opsForValue().get(token) != null) {
-                    throw new BusinessException(BLACK_TOKEN);
+                    throw new TokenException(BLACK_TOKEN);
                 }
                 // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             filterChain.doFilter(request, response);
-        } catch (RuntimeException e) {  // TODO: 2023-12-24 토큰예외 메시지 수정
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
-            response.getWriter().println("토큰 에러");
+        } catch (TokenException e) {  // TODO: 2023-12-24 토큰예외 메시지 수정
+            e.sendResponseError(response);
         }
     }
 
