@@ -25,7 +25,7 @@ public class OAuthAttributes {
     public static OAuthAttributes of(SocialType socialType,
                                      String userNameAttributeName, Map<String, Object> attributes) {
         if (socialType == SocialType.NAVER) {
-            return ofNaver(socialType,userNameAttributeName, attributes);
+            return ofNaver(socialType,"email", attributes);
         }
         if (socialType == SocialType.KAKAO) {
             return ofKakao(socialType,userNameAttributeName, attributes);
@@ -59,10 +59,10 @@ public class OAuthAttributes {
 
     public Member toEntity() {
         return Member.builder()
-                .id(oauth2UserInfo.getId())
+                .id(oauth2UserInfo.getEmail())
                 .name(oauth2UserInfo.getNickname())
                 .role(Collections.singleton(Role.ROLE_USER))
-                .oauthEmail(oauth2UserInfo.getEmail())
+                .oauthId(oauth2UserInfo.getId())
                 .socialType(socialType)
                 .build();
     }

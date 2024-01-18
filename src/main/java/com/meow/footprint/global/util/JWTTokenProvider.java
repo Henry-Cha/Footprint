@@ -46,9 +46,8 @@ public class JWTTokenProvider {
     public LoginTokenDTO getLoginResponse(Member member){
         return new LoginTokenDTO(member.getId(), generateAccessToken(member.getId(),getAuthorities(member)),generateRefreshToken(member.getId()));
     }
-    public LoginTokenDTO getLoginResponse(Authentication authentication){
-        String memberId = authentication.getName();
-        return new LoginTokenDTO(memberId, generateAccessToken(memberId,getAuthorities(authentication)),generateRefreshToken(memberId));
+    public LoginTokenDTO getLoginResponse(String email,Authentication authentication){
+        return new LoginTokenDTO(email, generateAccessToken(email,getAuthorities(authentication)),generateRefreshToken(email));
     }
     public String getAuthorities(Member member){
         return member.getRole().stream()

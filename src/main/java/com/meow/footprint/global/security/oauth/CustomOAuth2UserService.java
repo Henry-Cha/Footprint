@@ -39,7 +39,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         return new DefaultOAuth2User(
                 authorities,
-                oAuth2User.getAttributes(),
+                attributes.getOauth2UserInfo().attributes,
                 attributes.getNameAttributeKey());
     }
 

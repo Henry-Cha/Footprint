@@ -27,7 +27,7 @@ public class Member {
     private Set<Role> role = new HashSet<>();
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
-    private String oauthEmail;
+    private String oauthId;
     @CreatedDate
     private LocalDateTime joinDate;
 

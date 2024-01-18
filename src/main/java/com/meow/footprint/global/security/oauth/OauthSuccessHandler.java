@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
@@ -30,8 +31,9 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        log.info(authentication.toString());
-        LoginTokenDTO loginResponse = jwtTokenProvider.getLoginResponse(authentication);
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        String email = (String) oAuth2User.getAttributes().get("email");
+        LoginTokenDTO loginResponse = jwtTokenProvider.getLoginResponse(email,authentication);
         redisTemplate.opsForValue().set("RTK:"+loginResponse.getUserId(),loginResponse.getRefreshToken(), Duration.ofDays(jwtTokenProvider.getRefreshTokenValidityTime()));
 
         ResultResponse result = ResultResponse.of(LOGIN_SUCCESS,loginResponse);
