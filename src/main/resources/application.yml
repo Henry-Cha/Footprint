@@ -5,8 +5,10 @@ spring:
     group:
       local:
         - db-local
+        - auth-local
       server:
         - db-server
+        - auth-server
     include:
       - db
       - auth
