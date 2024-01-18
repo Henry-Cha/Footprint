@@ -198,6 +198,15 @@ public class MemberServiceImpl implements MemberService {
             throw new BusinessException(FAIL_TO_VERIFICATION_EMAIL);
     }
 
+    @Override
+    public String checkJwtToken() {
+        try {
+            return accountUtil.getLoginMemberId();
+        }catch (Exception e){
+            throw new BusinessException(JWT_MALFORM);
+        }
+    }
+
     private String createCode() {
         try {
             Random random = SecureRandom.getInstanceStrong();

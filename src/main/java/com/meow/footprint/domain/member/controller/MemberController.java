@@ -102,4 +102,11 @@ public class MemberController {
 		memberService.updatePassword(passwordUpdateRequest,memberId);
 		return ResponseEntity.ok(ResultResponse.of(PASSWORD_UPDATE_SUCCESS));
 	}
+
+	@Operation(summary = "jwt토큰으로 아이디 조회")
+	@GetMapping("/jwt")
+	public ResponseEntity<ResultResponse> checkJwtToken() {
+		String id = memberService.checkJwtToken();
+		return ResponseEntity.ok(ResultResponse.of(CHECK_MEMBER_OF_JWT,id));
+	}
 }

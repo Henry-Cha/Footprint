@@ -25,4 +25,6 @@ public interface MemberService {
     void sendCodeToEmail(String email);
 
     void verifiedCode(EmailVerificationRequest emailVerificationRequest);
+
+    String checkJwtToken();
 }

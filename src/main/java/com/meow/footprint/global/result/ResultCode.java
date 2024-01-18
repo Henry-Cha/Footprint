@@ -18,6 +18,7 @@ public enum ResultCode {
     PASSWORD_UPDATE_SUCCESS(200,  "비밀번호 변경에 성공하였습니다."),
     SEND_CODE_EMAIL_SUCCESS(200,  "이메일 인증코드 발송에 성공하였습니다."),
     EMAIL_VERIFICATION_SUCCESS(200,  "이메일 인증에 성공하였습니다."),
+    CHECK_MEMBER_OF_JWT(200,  "JWT토큰의 멤버 정보조회에 성공했습니다."),
 
     // Guestbook
     CREATE_GUESTBOOK_SUCCESS(201,"방명록 생성에 성공하였습니다."),
