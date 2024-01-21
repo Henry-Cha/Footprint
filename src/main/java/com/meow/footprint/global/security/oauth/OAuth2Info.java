@@ -64,12 +64,18 @@ public class OAuth2Info{
 
         @Override
         public String getEmail() {
-            return (String) attributes.get("email");
+            Map<String, Object> account = (Map<String, Object>) attributes.get("kakao_account");
+
+            if (account == null) {
+                return null;
+            }
+
+            return (String) account.get("email");
         }
 
         @Override
         public String getId() {
-            return (String) attributes.get("id");
+            return attributes.get("id").toString();
         }
 
         @Override

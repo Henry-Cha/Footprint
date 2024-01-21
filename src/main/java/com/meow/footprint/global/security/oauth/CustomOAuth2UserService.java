@@ -4,6 +4,7 @@ import com.meow.footprint.domain.member.entity.Member;
 import com.meow.footprint.domain.member.entity.SocialType;
 import com.meow.footprint.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final MemberRepository memberRepository;
 
@@ -32,6 +34,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         OAuthAttributes attributes = OAuthAttributes.of(SocialType.valueOf(registrationId.toUpperCase()), userNameAttributeName, oAuth2User.getAttributes());
 
+        log.info(attributes.toString());
         Member member = saveOrUpdate(attributes);
         Collection<? extends GrantedAuthority> authorities =member.getRole().stream()
                         .map(role -> new SimpleGrantedAuthority(role.name()))
