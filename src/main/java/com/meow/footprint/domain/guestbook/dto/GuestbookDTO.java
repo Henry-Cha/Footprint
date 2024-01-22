@@ -15,7 +15,7 @@ public class GuestbookDTO {
     private String hostId;
     private String photo;
     private int footprintCount;
-    private boolean isUpdate;
+    private int updateCount;
     private double latitude;
     private double longitude;
     private String addressSigungu;

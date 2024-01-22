@@ -28,8 +28,8 @@ public class Guestbook {
     private String photo;
     @ColumnDefault("0")
     private int footprintCount;
-    @ColumnDefault("false")
-    private boolean isUpdate;
+    @ColumnDefault("0")
+    private int updateCount;
     private double latitude;
     private double longitude;
     private String addressSigungu;
@@ -57,4 +57,11 @@ public class Guestbook {
     public void countUp(){
         this.footprintCount+=1;
     }
+    public void updateCountUp(){
+        this.updateCount+=1;
+    }
+    public void updateCountDown(){
+        this.updateCount-=1;
+    }
+
 }

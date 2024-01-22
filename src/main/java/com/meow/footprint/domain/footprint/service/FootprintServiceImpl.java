@@ -1,6 +1,17 @@
 package com.meow.footprint.domain.footprint.service;
 
-import com.meow.footprint.domain.footprint.dto.*;
+import static com.meow.footprint.global.result.error.ErrorCode.FOOTPRINT_ID_NOT_EXIST;
+import static com.meow.footprint.global.result.error.ErrorCode.FORBIDDEN_ERROR;
+import static com.meow.footprint.global.result.error.ErrorCode.GUESTBOOK_ID_NOT_EXIST;
+import static com.meow.footprint.global.result.error.ErrorCode.OUT_OF_AREA;
+import static com.meow.footprint.global.result.error.ErrorCode.PHOTO_ID_NOT_EXIST;
+
+import com.meow.footprint.domain.footprint.dto.FootprintByDateDTO;
+import com.meow.footprint.domain.footprint.dto.FootprintByDateSliceDTO;
+import com.meow.footprint.domain.footprint.dto.FootprintRequest;
+import com.meow.footprint.domain.footprint.dto.FootprintResponse;
+import com.meow.footprint.domain.footprint.dto.PhotoRequest;
+import com.meow.footprint.domain.footprint.dto.PhotoResponse;
 import com.meow.footprint.domain.footprint.entity.Footprint;
 import com.meow.footprint.domain.footprint.entity.Photo;
 import com.meow.footprint.domain.footprint.repository.FootprintRepository;
@@ -10,6 +21,8 @@ import com.meow.footprint.domain.guestbook.repository.GuestbookRepository;
 import com.meow.footprint.global.result.error.exception.BusinessException;
 import com.meow.footprint.global.util.AccountUtil;
 import com.meow.footprint.global.util.ImageUploader;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -19,11 +32,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.meow.footprint.global.result.error.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +59,7 @@ public class FootprintServiceImpl implements FootprintService{
                 ,footprintRequest.longitude())){
             throw new BusinessException(OUT_OF_AREA);
         }
-        guestbook.setUpdate(true);
+        guestbook.updateCountUp();
         guestbook.countUp();
         footprint.setGuestbook(guestbook);
         try {
@@ -68,7 +76,12 @@ public class FootprintServiceImpl implements FootprintService{
     @Override
     public FootprintResponse getSecretFootprint(long footprintId) {
         Footprint footprint = checkFootprintAuthority(footprintId);
-        footprint.setChecked(true);
+        if(!footprint.isChecked()){
+            if(footprint.getGuestbook().getHost().getId().equals(accountUtil.getLoginMemberId())) {
+                footprint.setChecked(true);
+                footprint.getGuestbook().updateCountDown();
+            }
+        }
         return FootprintResponse.from(footprint);
     }
 
@@ -101,10 +114,13 @@ public class FootprintServiceImpl implements FootprintService{
     @Override
     public void readCheckFootprint(long footprintId) {
         Footprint footprint = footprintRepository.findById(footprintId).orElseThrow(()->new BusinessException(FOOTPRINT_ID_NOT_EXIST));
+        if(footprint.isChecked())
+            return;
         try {
             String loginMemberId = accountUtil.getLoginMemberId();
             if(footprint.getGuestbook().getHost().getId().equals(loginMemberId)){
                 footprint.setChecked(true);
+                footprint.getGuestbook().updateCountDown();
                 footprintRepository.save(footprint);
             }
         }catch (RuntimeException e){
@@ -125,7 +141,6 @@ public class FootprintServiceImpl implements FootprintService{
                 ,photoRequest.longitude())){
             throw new BusinessException(OUT_OF_AREA);
         }
-        guestbook.setUpdate(true);
         photoEntity.setGuestbook(guestbook);
         String uploadPath = imageUploader.upload(photo);
         photoEntity.setFileName(uploadPath);
