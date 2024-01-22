@@ -1,5 +1,8 @@
 package com.meow.footprint.global.security.filter;
 
+import static com.meow.footprint.global.result.error.ErrorCode.BLACK_TOKEN;
+import static com.meow.footprint.global.result.error.ErrorCode.JWT_BADTYPE;
+
 import com.meow.footprint.global.result.error.exception.BusinessException;
 import com.meow.footprint.global.result.error.exception.TokenException;
 import com.meow.footprint.global.util.JWTTokenProvider;
@@ -7,6 +10,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,12 +21,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.Optional;
-
-import static com.meow.footprint.global.result.error.ErrorCode.BLACK_TOKEN;
-import static com.meow.footprint.global.result.error.ErrorCode.JWT_BADTYPE;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -65,8 +64,8 @@ public class JWTFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             filterChain.doFilter(request, response);
-        } catch (TokenException e) {  // TODO: 2023-12-24 토큰예외 메시지 수정
-            e.sendResponseError(response);
+        } catch (Exception e) {
+            new TokenException().sendResponseError(response);
         }
     }
 
