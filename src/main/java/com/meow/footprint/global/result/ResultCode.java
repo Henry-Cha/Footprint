@@ -27,6 +27,7 @@ public enum ResultCode {
     UPDATE_GUESTBOOK_SUCCESS(200,"방명록 수정에 성공하였습니다."),
     GET_GUESTBOOK_SIMPLE_SUCCESS(200,"방명록 개별 조회에 성공하였습니다."),
     GET_GUESTBOOK_QR_SUCCESS(200,"방명록 QR 조회에 성공하였습니다."),
+    GET_RECENT_FOOTPRINT_LIST_SUCCESS(200,"최근 발자국 조회에 성공하였습니다."),
 
     // footprint
     CREATE_FOOTPRINT_SUCCESS(201,"발자국 생성에 성공하였습니다."),

@@ -1,5 +1,6 @@
 package com.meow.footprint.domain.guestbook.service;
 
+import com.meow.footprint.domain.footprint.dto.FootprintResponse;
 import com.meow.footprint.domain.guestbook.dto.*;
 import com.meow.footprint.domain.guestbook.entity.Guestbook;
 import com.meow.footprint.domain.guestbook.repository.GuestbookRepository;
@@ -87,5 +88,10 @@ public class GuestbookServiceImpl implements GuestbookService{
             guestbook.setQrCode(qrCode);
         }
         return new GuestbookQrResponse(guestbook.getQrCode());
+    }
+
+    @Override
+    public List<FootprintResponse> getFootprintListRecent() {
+        return guestbookRepository.getFootprintListRecent(accountUtil.getLoginMemberId());
     }
 }

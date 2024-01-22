@@ -1,5 +1,6 @@
 package com.meow.footprint.domain.guestbook.service;
 
+import com.meow.footprint.domain.footprint.dto.FootprintResponse;
 import com.meow.footprint.domain.guestbook.dto.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,4 +18,6 @@ public interface GuestbookService {
     GuestbookSimpleResponse getGuestbookSimple(long guestbookId);
 
     GuestbookQrResponse getGuestbookQr(long guestbookId, String qrLink);
+
+    List<FootprintResponse> getFootprintListRecent();
 }
