@@ -1,19 +1,46 @@
 package com.meow.footprint.domain.member.controller;
 
-import com.meow.footprint.domain.member.dto.*;
+import static com.meow.footprint.global.result.ResultCode.CHECK_MEMBER_OF_JWT;
+import static com.meow.footprint.global.result.ResultCode.EMAIL_VERIFICATION_SUCCESS;
+import static com.meow.footprint.global.result.ResultCode.LOGIN_SUCCESS;
+import static com.meow.footprint.global.result.ResultCode.LOGOUT_SUCCESS;
+import static com.meow.footprint.global.result.ResultCode.MEMBER_DELETE_SUCCESS;
+import static com.meow.footprint.global.result.ResultCode.MEMBER_FIND_SUCCESS;
+import static com.meow.footprint.global.result.ResultCode.MEMBER_ID_EXIST;
+import static com.meow.footprint.global.result.ResultCode.MEMBER_ID_NOT_EXIST;
+import static com.meow.footprint.global.result.ResultCode.MEMBER_UPDATE_SUCCESS;
+import static com.meow.footprint.global.result.ResultCode.PASSWORD_UPDATE_SUCCESS;
+import static com.meow.footprint.global.result.ResultCode.SEND_CODE_EMAIL_SUCCESS;
+
+import com.meow.footprint.domain.member.dto.EmailVerificationRequest;
+import com.meow.footprint.domain.member.dto.LoginRequest;
+import com.meow.footprint.domain.member.dto.LoginTokenDTO;
+import com.meow.footprint.domain.member.dto.MemberJoinRequest;
+import com.meow.footprint.domain.member.dto.MemberResponse;
+import com.meow.footprint.domain.member.dto.MemberUpdateRequest;
+import com.meow.footprint.domain.member.dto.PasswordUpdateRequest;
 import com.meow.footprint.domain.member.service.MemberService;
 import com.meow.footprint.global.result.ResultCode;
 import com.meow.footprint.global.result.ResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import static com.meow.footprint.global.result.ResultCode.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/members")
@@ -23,14 +50,14 @@ public class MemberController {
 
 	@Operation(summary = "Email인증 코드 전송")
 	@GetMapping("/emails/code")
-	public ResponseEntity<ResultResponse> sendMessage(String email) {
+	public ResponseEntity<ResultResponse> sendMessage(@NotBlank @Email String email) {
 		memberService.sendCodeToEmail(email);
 		return ResponseEntity.ok(ResultResponse.of(SEND_CODE_EMAIL_SUCCESS));
 	}
 
 	@Operation(summary = "Email인증 코드 검사")
 	@PostMapping("/emails/code")
-	public ResponseEntity<ResultResponse> verificationEmail(@RequestBody EmailVerificationRequest emailVerificationRequest) {
+	public ResponseEntity<ResultResponse> verificationEmail(@RequestBody @Valid EmailVerificationRequest emailVerificationRequest) {
 		memberService.verifiedCode(emailVerificationRequest);
 		return ResponseEntity.ok(ResultResponse.of(EMAIL_VERIFICATION_SUCCESS));
 	}
@@ -41,7 +68,7 @@ public class MemberController {
 			@ApiResponse(responseCode = "500", description = "실패."),
 	})
 	@PostMapping("")
-	public ResponseEntity<ResultResponse> register(@RequestBody MemberJoinRequest joinRequest) {
+	public ResponseEntity<ResultResponse> register(@RequestBody @Valid MemberJoinRequest joinRequest) {
 		memberService.register(joinRequest);
 		return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.of(ResultCode.REGISTER_SUCCESS));
 	}
@@ -63,7 +90,7 @@ public class MemberController {
 
 	@Operation(summary = "회원정보 수정.")
 	@PatchMapping("/{memberId}")
-	public ResponseEntity<ResultResponse> updateMember(@RequestBody MemberUpdateRequest memberUpdateRequest,@PathVariable String memberId) {
+	public ResponseEntity<ResultResponse> updateMember(@RequestBody @Valid MemberUpdateRequest memberUpdateRequest,@PathVariable String memberId) {
 		memberService.updateMember(memberUpdateRequest,memberId);
 		return ResponseEntity.ok(ResultResponse.of(MEMBER_UPDATE_SUCCESS));
 	}
@@ -98,7 +125,7 @@ public class MemberController {
 
 	@Operation(summary = "비밀번호 수정.")
 	@PatchMapping("/{memberId}/password")
-	public ResponseEntity<ResultResponse> updatePassword(@RequestBody PasswordUpdateRequest passwordUpdateRequest, @PathVariable String memberId) {
+	public ResponseEntity<ResultResponse> updatePassword(@RequestBody @Valid PasswordUpdateRequest passwordUpdateRequest, @PathVariable String memberId) {
 		memberService.updatePassword(passwordUpdateRequest,memberId);
 		return ResponseEntity.ok(ResultResponse.of(PASSWORD_UPDATE_SUCCESS));
 	}

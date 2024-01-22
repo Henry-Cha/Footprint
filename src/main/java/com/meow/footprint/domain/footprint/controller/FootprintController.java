@@ -8,6 +8,7 @@ import com.meow.footprint.domain.footprint.service.FootprintService;
 import com.meow.footprint.global.result.ResultCode;
 import com.meow.footprint.global.result.ResultResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,7 +24,7 @@ public class FootprintController {
 
     @Operation(summary = "발자국 생성")
     @PostMapping("")
-    public ResponseEntity<ResultResponse> createFootprint(@RequestBody FootprintRequest footprintRequest){
+    public ResponseEntity<ResultResponse> createFootprint(@RequestBody @Valid FootprintRequest footprintRequest){
         footprintService.createFootprint(footprintRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.of(ResultCode.CREATE_FOOTPRINT_SUCCESS));
     }
@@ -58,7 +59,7 @@ public class FootprintController {
 
     @Operation(summary = "발자국 사진 등록")
     @PostMapping(value = "/photos",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResultResponse> createPhoto(@RequestPart PhotoRequest photoRequest
+    public ResponseEntity<ResultResponse> createPhoto(@RequestPart @Valid PhotoRequest photoRequest
             , @RequestPart(value = "photo", required = false) MultipartFile photo){
         footprintService.createPhoto(photoRequest,photo);
         return ResponseEntity.status(HttpStatus.CREATED).body(ResultResponse.of(ResultCode.CREATE_PHOTO_SUCCESS));

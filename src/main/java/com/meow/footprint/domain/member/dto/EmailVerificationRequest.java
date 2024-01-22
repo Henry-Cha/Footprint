@@ -1,4 +1,7 @@
 package com.meow.footprint.domain.member.dto;
 
-public record EmailVerificationRequest(String email,String authCode) {
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
+public record EmailVerificationRequest(@NotBlank @Email String email, @NotBlank String authCode) {
 }

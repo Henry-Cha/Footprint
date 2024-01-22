@@ -1,4 +1,6 @@
 package com.meow.footprint.domain.member.dto;
 
-public record MemberUpdateRequest(String name) {
+import jakarta.validation.constraints.NotBlank;
+
+public record MemberUpdateRequest(@NotBlank String name) {
 }
