@@ -2,9 +2,8 @@ package com.meow.footprint.global.security;
 
 
 import com.meow.footprint.global.security.filter.JWTFilter;
-import com.meow.footprint.global.security.oauth.CustomOAuth2UserService;
-import com.meow.footprint.global.security.oauth.OauthSuccessHandler;
 import com.meow.footprint.global.util.JWTTokenProvider;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,8 +25,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-
 @Slf4j
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -37,8 +34,6 @@ public class securityConfig {
     private String[] whiteList;
     private final JWTTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
-    private final CustomOAuth2UserService oAuth2UserService;
-    private final OauthSuccessHandler oauthSuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -49,11 +44,7 @@ public class securityConfig {
                 .csrf(CsrfConfigurer::disable)
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login(oAuth2LoginConfigurer -> oAuth2LoginConfigurer
-                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
-                                .userService(oAuth2UserService))
-                        .successHandler(oauthSuccessHandler));
+                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
     @Bean

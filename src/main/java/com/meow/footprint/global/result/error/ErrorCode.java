@@ -29,6 +29,7 @@ public enum ErrorCode {
     WRONG_PASSWORD(400, "비밀번호가 일치하지 않습니다."),
     MEMBER_ID_ALREADY_EXIST(400, "회원 id가 이미 존재합니다."),
     MEMBER_ID_NOT_EXIST(400, "회원 id가 존재하지 않습니다."),
+    FAIL_TO_OAUTH_LOGIN(400,"소셜 로그인에 실패했습니다."),
 
     //upload
     IS_NOT_IMAGE(400,"이미지파일만 업로드 가능합니다."),
