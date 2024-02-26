@@ -39,7 +39,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class GuestbookController {
     private final GuestbookService guestbookService;
 
-    // TODO: 2023-12-30 스웨거에서 테스트 하면 dto가 json으로 안날라가서 테스트 안됨. 포스트맨에서는 됨
     @Operation(summary = "방명록 생성")
     @PostMapping(value = "",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResultResponse> createGuestbook(@RequestPart @Valid GuestBookRequest guestBookRequest
