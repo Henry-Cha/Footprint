@@ -21,8 +21,9 @@ api 명세 : https://jeweled-maiasaura-181.notion.site/Ver-1-9ac35007ef24404e95b
 
 
 > 시스템 아키텍처
+> 
+![image](https://github.com/Henry-Cha/Footprint/assets/74866067/de42a44d-abcb-4c4f-96e6-b53d237deee5)
 
-![image](https://github.com/Footprint-meow/Footprint-BackEnd/assets/74866067/ece22223-8550-4b1b-aa7c-4df1ac72d478)
 
 
 >패키지 구조
@@ -30,13 +31,17 @@ api 명세 : https://jeweled-maiasaura-181.notion.site/Ver-1-9ac35007ef24404e95b
 패키지 구조를 도메인형으로 나누어 직관적으로 구분이 가능하도록 설계하였습니다.
 
 ```
-└─src
-    ├─main
+└─main
     │  ├─java
     │  │  └─com
     │  │      └─meow
     │  │          └─footprint
     │  │              ├─domain
+    │  │              │  ├─auth
+    │  │              │  │  ├─api
+    │  │              │  │  ├─controller
+    │  │              │  │  ├─dto
+    │  │              │  │  └─service
     │  │              │  ├─footprint
     │  │              │  │  ├─controller
     │  │              │  │  ├─dto
@@ -53,7 +58,6 @@ api 명세 : https://jeweled-maiasaura-181.notion.site/Ver-1-9ac35007ef24404e95b
     │  │              │      ├─controller
     │  │              │      ├─dto
     │  │              │      ├─entity
-    │  │              │      ├─exception
     │  │              │      ├─repository
     │  │              │      └─service
     │  │              └─global
@@ -62,17 +66,15 @@ api 명세 : https://jeweled-maiasaura-181.notion.site/Ver-1-9ac35007ef24404e95b
     │  │                  │  └─error
     │  │                  │      └─exception
     │  │                  ├─security
-    │  │                  │  ├─filter
-    │  │                  │  └─oauth
+    │  │                  │  └─filter
     │  │                  └─util
     │  └─resources
-    │      ├─static
-    │      └─templates
+    ...
 ```
-
 >ERD
 
-![image](https://github.com/Footprint-meow/Footprint-BackEnd/assets/74866067/52a774f1-e86d-419c-af06-4bbaaa5e2e5b)
+![Footprint](https://github.com/Henry-Cha/Footprint/assets/74866067/5e692387-106a-4398-8fce-0d1de34b7a9e)
+
 
 
 
@@ -155,64 +157,73 @@ public class QrCodeUtil {
 
 
 ## Security
-자체 회원가입,로그인 + OAuth2 소셜로그인(카카오,네이버,구글) 구현. (비회원이라면 회원가입 후) 자체 JWT토큰을 발급합니다.
+자체 회원가입,로그인 + OAuth2 소셜로그인(카카오,네이버) 구현. (비회원이라면 회원가입 후) 자체 JWT토큰을 발급합니다.
 
-스프링 시큐리티의 필터를 이용하여 토큰 발급,인증 과정을 처리하였습니다.
+스프링 시큐리티의 필터를 이용하여 토큰 인증 과정을 처리합니다.
 
-<br/>
+소셜로그인 과정은 CSR 환경을 고려하여 프론트에서 인가코드 발급 후, 인가코드를 전달받아 처리하도록 구현하였습니다.
 
-- securityConfig
-
-
-```
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorizeRegistry -> authorizeRegistry
-                .requestMatchers(whiteList).permitAll()
-                .anyRequest().authenticated())
-                .formLogin(FormLoginConfigurer::disable)
-                .csrf(CsrfConfigurer::disable)
-                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
-                .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class)
-                .oauth2Login(oAuth2LoginConfigurer -> oAuth2LoginConfigurer
-                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
-                                .userService(oAuth2UserService))
-                        .successHandler(oauthSuccessHandler));
-        return http.build();
-```
+비슷한 Oauth2 처리 과정에서 코드 중복을 줄이기 위해, 관련 클래스를 추상화하였습니다.
 
 <br/>
 
-- CustomOAuth2UserService
-
+- AuthServiceImpl
+  
 ```
-public class CustomOAuth2UserService extends DefaultOAuth2UserService {
-    private final MemberRepository memberRepository;
-
     @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User oAuth2User = super.loadUser(userRequest);
-
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
-                .getUserInfoEndpoint().getUserNameAttributeName();
-
-        OAuthAttributes attributes = OAuthAttributes.of(SocialType.valueOf(registrationId.toUpperCase()), userNameAttributeName, oAuth2User.getAttributes());
-
-        log.info(attributes.toString());
-        Member member = saveOrUpdate(attributes);
-        Collection<? extends GrantedAuthority> authorities =member.getRole().stream()
-                        .map(role -> new SimpleGrantedAuthority(role.name()))
-                        .collect(Collectors.toList());
-
-        return new DefaultOAuth2User(
-                authorities,
-                attributes.getOauth2UserInfo().attributes,
-                attributes.getNameAttributeKey());
+    public LoginTokenDTO loginOauth(OAuthLoginReq loginReq) {
+        try {
+            ClientRegistration provider = inMemoryClient.findByRegistrationId(
+                loginReq.getProviderName().getSocialName()); //provider 찾음
+            OAuthApi oAuthApi = null;
+            switch (loginReq.getProviderName()) {
+                case KAKAO -> oAuthApi = new KakaoOAuthApi(provider, loginReq);
+                case NAVER -> oAuthApi = new NaverOAuthApi(provider, loginReq);
+            }
+            OAuth2UserInfo oAuth2UserInfo = oAuthApi.loginProcess();
+            Member member = memberRepository.findById(oAuth2UserInfo.getEmail())
+                .orElseGet(() -> createNewMember(oAuth2UserInfo));
+        .
+        .
+        .
     }
-    ...
+```
+<br/>
+
+- OAuthApi
+
+```
+public abstract class OAuthApi {
+
+    private ClientRegistration provider;
+    private OAuthLoginReq oAuthLoginReq;
+
+    public OAuth2UserInfo loginProcess() {
+        OAuthTokenRes oAuthToken = getOAuthToken(provider, oAuthLoginReq);
+        Map<String, Object> param = getUserAttribute(provider,
+            oAuthToken.getAccessToken());
+        return makeUserInfo(param);
+    }
+
+    public abstract OAuthTokenRes getOAuthToken(ClientRegistration provider,
+        OAuthLoginReq loginReq);
+
+    private Map<String, Object> getUserAttribute(ClientRegistration clientRegistration,
+        String oauth2Token) {
+        return WebClient.create()
+            .get()
+            .uri(clientRegistration.getProviderDetails().getUserInfoEndpoint().getUri())
+            .headers(header -> header.setBearerAuth(oauth2Token))
+            .retrieve()
+            .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+            })
+            .block();
+    }
+
+    public abstract OAuth2UserInfo makeUserInfo(Map<String, Object> param);
 }
 ```
+
 
 ## 응답 객체
 RestController의 반환 객체를 통일하였습니다.
